@@ -2,66 +2,17 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
-#include  <unistd.h>// för timern
-#include  <signal.h>// för timern
+#include  <unistd.h>
+#include  <signal.h>
 
-// Chardis använder två funktioner i detta bibliotek...
-// spg_blit_part()
-// spg_blit_part_filled()
-
-// Charis använder två structs i denna fil...
-// spg_rect
-// spg_frame
-
-// Pluggen använder följande funktioner ifrån detta bibliotek...
-// spg_blit(&plug->mywin.frame,&bg, 0, 0);
-// spg_update_window(&plug->mywin);
-// spg_bmp_include(&knob_anim,knob_array);				// Load knob graphics.
-// spg_fill_bg(&knob_anim,(unsigned int)0x4466FF);			// set background color (bg color) for knob array.
-// spg_open_plugin_window(&plug->mywin,ptr,350,90);			// Open a editor window in host
-
-// Alla funktioner i chardis...
-// används-> int chardis_init(struct chardis *display, spg_frame *renderer, spg_frame *texture, int columns, int rows 
-// används-> void chardis_tile_size(struct chardis *display,int width,int hight){ // can be used after chardis_init
-// används-> int chardis_mouse_pos(struct chardis *display, int x, int y){ // returns -1 if outside the character display
-// används-> void chardis_draw(struct chardis *display, char filling, int x, int y){  // x y is pixel coordinate to draw it in the window
-// not used->void chardis_free(struct chardis *display)
-
-// Alla funktioner i spg (detta bibliotek)...
-//void spg_blit_part(spg_frame *mywin,spg_frame *frame, int x, int y, spg_rect *part) // ingen spg function kallar på denna funktionen
-//void spg_blit_part_filled(spg_frame *mywin,spg_frame *frame, int x, int y, spg_rect *part) // ingen spg function kallar på denna funktionen
-//void spg_blit(spg_frame *mywin,spg_frame *frame, int x, int y) // ingen spg function kallar på denna funktionen
-//void spg_fill_bg(spg_frame *frame,unsigned int color) // ingen spg function kallar på denna funktionen
-//void spg_bmp_include(spg_frame *frame,const unsigned char* bmp_incl) // spg_get_events kallar på denna funktionen
-//void spg_bmp_file(spg_frame *frame,const char * filename);// ingen spg function kallar på denna funktionen
-//void spg_bmp_read(spg *mywin,const char * filename) // ingen spg function kallar på denna funktionen
-//void spg_open_plugin_window(spg *mywin,void *ptr,int w, int h) // ingen spg function kallar på denna funktionen
-//void spg_window_adopter(spg *mywin,void *ptr) // ingen spg function kallar på denna funktionen
-//void spg_open_window(spg *mywin,int w, int h) // ingen spg function kallar på denna funktionen
-//void spg_close_window(spg *mywin) // spg_get_events kallar på denna funktionen
-//void spg_update_window(spg *mywin)  // spg_get_events kallar på denna funktionen
-//void spg_get_events(spg *mywin) // ingen spg function kallar på denna funktionen
-//void spg_start_timer( void(*callback_func)(int),int ms_interval) // ingen spg function kallar på denna funktionen
-
-// Plugen använder inte följande från chardis...
-//void chardis_free(struct chardis *display)
-
-// Plugen använder inte följande från spg...
-//void spg_bmp_file(spg_frame *frame,const char * filename);// ingen spg function kallar på denna funktionen
-//void spg_bmp_read(spg *mywin,const char * filename) // ingen spg function kallar på denna funktionen
-//void spg_window_adopter(spg *mywin,void *ptr) // ingen spg function kallar på denna funktionen
-//void spg_open_window(spg *mywin,int w, int h) // ingen spg function kallar på denna funktionen
-//void spg_close_window(spg *mywin) // spg_get_events kallar på denna funktionen
-//void spg_start_timer( void(*callback_func)(int),int ms_interval) // ingen spg function kallar på denna funktionen
-
-typedef struct { // Chardis använder denna struct
+typedef struct { 
         int x;
         int y;
         int w;
         int h;
 } spg_rect ;
 
-typedef struct { // Chardis använder denna struct
+typedef struct { 
 	union { int w, width; };
 	union { int h, height; };
 	unsigned int *pixels;
@@ -104,8 +55,6 @@ spg mywin; // innan jag gjorde det till en array
 int old_x;
 int old_y;
 
-// Chardis kallar på denna funktionen
-// ingen spg function kallar på denna funktionen
 void spg_blit_part(spg_frame *mywin,spg_frame *frame, int x, int y, spg_rect *part){ // Draw area
         if((x<0) || (y<0))return; // sheilding crash
         if(mywin->w <= (x+part->w))return; // shelding crash
@@ -117,8 +66,6 @@ void spg_blit_part(spg_frame *mywin,spg_frame *frame, int x, int y, spg_rect *pa
         }
 }
 
-// Chardis kallar på denna funktionen
-// ingen spg function kallar på denna funktionen
 void spg_blit_part_filled(spg_frame *mywin,spg_frame *frame, int x, int y, spg_rect *part){ // Draw area
         if((x<0) || (y<0))return; // sheilding crash
         if(mywin->w <= (x+part->w))return; // shielding crash
@@ -148,7 +95,6 @@ void spg_blit_part_filled(spg_frame *mywin,spg_frame *frame, int x, int y, spg_r
         }
 }
 
-// ingen spg function kallar på denna funktionen
 void spg_blit(spg_frame *mywin,spg_frame *frame, int x, int y){ // Draw area. Flexible to Blit in windows and pixel buffers. Can be optimized greatly.
         for(int j = 0 ; j < frame->h ; j++){ // vertical
                 for(int i = 0 ; i < frame->w ; i++){   // horizontal         
@@ -157,7 +103,6 @@ void spg_blit(spg_frame *mywin,spg_frame *frame, int x, int y){ // Draw area. Fl
         }
 }
 
-// ingen spg function kallar på denna funktionen
 void spg_fill_bg(spg_frame *frame,unsigned int color){// A background color for automatic filling of transparent pixels.
         for(int i = 0 ; i < frame->size ; i++){
                 unsigned int temp = frame->pixels[i];
@@ -177,7 +122,6 @@ void spg_fill_bg(spg_frame *frame,unsigned int color){// A background color for 
         }
 }
 
-// ingen spg function kallar på denna funktionen
 void spg_bmp_include(spg_frame *frame,const unsigned char* bmp_incl){
         unsigned int start;
         frame->w = bmp_incl[0x12] + (bmp_incl[0x12+1]<<8) + (bmp_incl[0x12+2]<<16) + (bmp_incl[0x12+3]<<24);
@@ -197,7 +141,6 @@ void spg_bmp_include(spg_frame *frame,const unsigned char* bmp_incl){
         frame->size = frame->w * frame->h ;
 }
 
-// ingen spg function kallar på denna funktionen
 void spg_open_plugin_window(spg *mywin,void *ptr,int w, int h){
         mywin->frame.w = w;
         mywin->frame.h = h;
@@ -217,9 +160,8 @@ void spg_open_plugin_window(spg *mywin,void *ptr,int w, int h){
         // Event typer att ta emot
 	XSelectInput(mywin->dis, mywin->win, ExposureMask|PointerMotionMask|ButtonPressMask|ButtonReleaseMask|KeyPressMask|KeyReleaseMask|FocusChangeMask|EnterWindowMask|LeaveWindowMask); // Select event types to get
 
-        mywin->gc=DefaultGC(mywin->dis,mywin->screen); // alternativ som funkar är... mywin->gc=XCreateGC(mywin->dis, mywin->win, 0,0);
+        mywin->gc=DefaultGC(mywin->dis,mywin->screen); 
 
-	//XClearWindow(mywin->dis, mywin->win);
 	XMapRaised(mywin->dis, mywin->win);
 
         XWindowAttributes wa = {0};
@@ -233,19 +175,15 @@ void spg_open_plugin_window(spg *mywin,void *ptr,int w, int h){
         XFlush(mywin->dis);
 }
 
-// spg_get_events kallar på denna funktionen
-// plug doesn't use this, but spg_get_events() does - not recogniced as a plug if removed ??? is it used somewhere??? why don't the compiler complain if removed? För att headern till functionen är deklarerad?
 void spg_close_window(spg *mywin){ // Denna kallas på av spg_get_events()
 	XDestroyWindow(mywin->dis,mywin->win);
 	XCloseDisplay(mywin->dis);				
 };
 
-// spg_get_events kallar på denna funktionen
 void spg_update_window(spg *mywin){ // Denna kallas på av spg_get_events()
         XPutImage(mywin->dis, mywin->win, mywin->gc, mywin->image, 0, 0, 0, 0, mywin->frame.w, mywin->frame.h);
 };
 
-// ingen spg function kallar på denna funktionen.
 void spg_get_events(spg *mywin){ // ingen spg function kallar på denna funktionen
         while( XPending(mywin->dis) > 0 ){ // no of events in que
                 XNextEvent(mywin->dis, &mywin->event); // Get next event
@@ -258,11 +196,11 @@ void spg_get_events(spg *mywin){ // ingen spg function kallar på denna funktion
                 }
 	        if (mywin->event.type==Expose && mywin->event.xexpose.count==0) spg_update_window(mywin); // Window graphics needs a redraw
                 if (mywin->event.type==KeyPress&& XLookupString(&mywin->event.xkey,mywin->text,255,&mywin->key,0)==1) { // the XLookupString routine to converts the KeyPress event data into regular text.
-		        //printf("You pressed the %c key!\n",mywin.text[0]);
+		        
 	        }
 
                 switch(mywin->event.type){
-                        case MotionNotify:{// Muspekarrörelse
+                        case MotionNotify:{
                                 mywin->mouse.x_rel =  mywin->event.xmotion.x -old_x ;
                                 mywin->mouse.y_rel =  mywin->event.xmotion.y -old_y ;
                             
@@ -270,7 +208,7 @@ void spg_get_events(spg *mywin){ // ingen spg function kallar på denna funktion
                                 old_y = mywin->mouse.y = mywin->event.xmotion.y ;
                         }
                         break;
-                        case ButtonPress:   //printf("Mouse botton down x %d y %d ",mywin.event.xbutton.x,mywin.event.xbutton.y);
+                        case ButtonPress:  
                                 switch(mywin->event.xbutton.button){
                                         case 1: mywin->mouse.buttons |=  MOUSE_LEFT;   break; // printf("Left\n"); break;
                                         case 2: mywin->mouse.buttons |=  MOUSE_MIDDLE; break; // printf("Middle\n");break;
@@ -278,7 +216,7 @@ void spg_get_events(spg *mywin){ // ingen spg function kallar på denna funktion
                                         //default: printf("???%d",mywin.event.xbutton.button);break;
                                 }
                         break;
-                        case ButtonRelease: //printf("Mouse botton up x %d y %d \n",mywin.event.xbutton.x,mywin.event.xbutton.y); break;
+                        case ButtonRelease: 
                                 switch(mywin->event.xbutton.button){
                                         case 1: mywin->mouse.buttons &= ~MOUSE_LEFT;   break; // printf("Left\n"); break;
                                         case 2: mywin->mouse.buttons &= ~MOUSE_MIDDLE; break; // printf("Middle\n");break;
