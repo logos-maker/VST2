@@ -24,5 +24,14 @@ For graphics it uses character maps, an old concept widely used in the 80's and 
 
 Character maps is a very powerful concept, that gives very little code, for doing wondrous stuff. It can be used for animations and other stuff very easily and fits the needs for graphics in audio plugins very well. The posibillity to make stand alone applications may be reintroduced later on, and also make the possiblillity to make old school application programming and easy game development with the same ease of use later on.
 
+## Tutorials
+A totorial on how to use and change this example will luckely be provided later on. This is only a showcase at the moment, even if it's fully working code.
+## Compilation on Linux
+It can easily be done on a standard Linux machine with a command like...
+gcc generic_fx_code.c -o plugin.so -fPIC -shared
+...for a 64bit Linux plugin. Or...
+x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
+...for a 64bit Windows plugin.
+
 
 
