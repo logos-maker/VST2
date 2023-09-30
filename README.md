@@ -16,7 +16,7 @@ I have kept the code size as low as possible, and made it completable with Linux
 
 For the graphics part, it makes use of a RAW display buffer only for graphics. And I have made a simple library that makes GUI's for audio plugins possible with the least amount of code and dependencies.
 
-This library was originally made for making classic programming following the style of programming form the 80's. And it's tweaked to be even more flexible and easy to use than it's ever has been. All code made for making standalone applications is stripped form the library at this moment. The code for making this was originally made for SDL2, but as this lacks compatibility for child windows that is necessary for audio plugins, I made my own comparability layer that replaces SDL2.
+This library was originally made for making classic programming following the style of programming form the 80's. And it's tweaked to be even more flexible and easy to use than it's ever has been. All code made for making standalone applications is stripped form the library at this moment. The code for making this was originally made for SDL2, but as this lacks compatibility for child windows that is necessary for audio plugins, I made my own compatibility layer that replaces SDL2.
 
 ## The graphics library used
 For painting graphics, it uses almost no code at all. And it has a separate file that connects to different platforms that is also small and different, depending on what platform the compiler uses.
