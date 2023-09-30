@@ -191,7 +191,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
 	    spg_bmp_include(&bg,bg_array);					// Load background graphics. 
             spg_fill_bg(&knob_anim,(unsigned int)0x4466FF);			// set background color (rbg color) for knob array.
 
-            spg_open_plugin_window(&plug->mywin,ptr,350,90);			// Open a editor window in host
+            spg_open_plugin_window(&plug->mywin,ptr,350,90);			// Open the editor window in host
             chardis_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1);	// Set number of knobs in the tile array
             chardis_tile_size(&plug->knober,64,56); 				// Set tile size of knob animation
 
