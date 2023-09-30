@@ -1,4 +1,3 @@
-        //HINSTANCE hInstance; // https://stackoverflow.com/questions/15462064/hinstance-in-createwindow
 #define PRINT_ERROR(a, args...) printf("ERROR %s() %s Line %d: " a, __FUNCTION__, __FILE__, __LINE__, ##args);
 #include <windows.h>
 #include <stdbool.h>
@@ -49,7 +48,7 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
 	spg *mywin = (spg*)GetWindowLongPtr(window_handle, GWLP_USERDATA);
 
 	switch(message) {
-		case WM_CLOSE: break;// någon har tryckt krysset på editorn
+		case WM_CLOSE: break;
 		case WM_QUIT:  break;// This function is usually called when the main window receives WM_DESTROY
 		case WM_DESTROY: DestroyWindow(window_handle); break;// Window is about to be destroyed, and can not be hindered.
 		case WM_PAINT: {
@@ -75,7 +74,7 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
 		        mywin->mouse.y = HIWORD(lParam);//GET_Y_LPARAM(lParam);//(int)HIWORD(lParam);
 			}
 		} break;
-		case WM_MOUSELEAVE: break; // Nyligen ditlagt. Något att reagera på?
+		case WM_MOUSELEAVE: break;
 		case WM_LBUTTONDOWN: mywin->mouse.buttons |=  MOUSE_LEFT;   SetCapture(window_handle); GetCursorPos(&mywin->mouse.pos);break;
 		case WM_LBUTTONUP:   mywin->mouse.buttons &= ~MOUSE_LEFT;   ReleaseCapture();break;
 		case WM_MBUTTONDOWN: mywin->mouse.buttons |=  MOUSE_MIDDLE; break;
@@ -157,14 +156,13 @@ void spg_bmp_include(spg_frame *frame,const unsigned char* bmp_incl){
         frame->h = bmp_incl[0x16] + (bmp_incl[0x16+1]<<8) + (bmp_incl[0x16+2]<<16) + (bmp_incl[0x16+3]<<24);
         start =    bmp_incl[0x0a] + (bmp_incl[0x0a+1]<<8) + (bmp_incl[0x0a+2]<<16) + (bmp_incl[0x0a+3]<<24);
 
-        frame->pixels = (unsigned int*)malloc(frame->w*frame->h*4); // allokera minne för pixlarna i bilden
+        frame->pixels = (unsigned int*)malloc(frame->w*frame->h*4); // allocate memory for the pixles in the picture
 
         int counter = 0 ; 
-        for(int j = frame->h -1 ; j >= 0 ; j--){ // läs ut alla rader i bilden 
-                for(int i = 0 ; i < frame->w ; i++){// Läs ut en rad av pixlar och visa i fönster
+        for(int j = frame->h -1 ; j >= 0 ; j--){ // Read all lines in the rows in the picture 
+                for(int i = 0 ; i < frame->w ; i++){
                         int pixl_addr = (i+(j*frame->w))*4+start;
                         frame->pixels[counter++]= bmp_incl[pixl_addr]+ (bmp_incl[pixl_addr+1]<<8)+ (bmp_incl[pixl_addr+2]<<16)+ (bmp_incl[pixl_addr+3]<<24);
-                        //frame->pixels[i+(j*frame->w)]= bmp_incl[pixl_addr]+ (bmp_incl[pixl_addr+1]<<8)+ (bmp_incl[pixl_addr+2]<<16)+ (bmp_incl[pixl_addr+3]<<24); // Grafiken blir upp och nedvänd
                         unsigned int temp = bmp_incl[pixl_addr]+ (bmp_incl[pixl_addr+1]<<8)+ (bmp_incl[pixl_addr+2]<<16)+ (bmp_incl[pixl_addr+3]<<24);
                 }
         }
@@ -222,8 +220,7 @@ void spg_open_plugin_window(spg *mywin,void *ptr,int w, int h){
 	if(mywin->bitmap) DeleteObject(mywin->bitmap);
 	mywin->bitmap = CreateDIBSection(NULL, &mywin->bitmap_info, DIB_RGB_COLORS, (void**)&mywin->frame.pixels, 0, 0);
 	SelectObject(mywin->bitmap_device_context, mywin->bitmap);
-	SetWindowLongPtr(mywin->window_handle, GWLP_USERDATA, (LONG_PTR)mywin); // så eventhandlern kan nå instansen
-        //SetParent(mywin->window_handle, (HWND)ptr); // Gör varken från eller till att ha med
+	SetWindowLongPtr(mywin->window_handle, GWLP_USERDATA, (LONG_PTR)mywin);
 }
 
 void spg_get_events(struct spg *mywin){
