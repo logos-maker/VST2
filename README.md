@@ -3,7 +3,7 @@ This is the smallest amout of code, for making a cross platform VST2 audio plugi
 
 This code was written on Linux, and cross compiles to Windows. And it subrogates the VST2 licence. That makes it possible for anyone to make VST2 ABI compatible audio plugins, that will be fully usefull in numerus music programs on Windows developing an a Linux machine.
 
-#Subrogating the VST2 licence - Making VST2 developent availabe for anyone
+#2 Subrogating the VST2 licence - Making VST2 developent availabe for anyone
 To circumvent this issue, this codebase only makes use of parts of the VST2 ABI.
 
 I could have kept the original API for VST2 plugins, but a specific company would complain and make it go away, when I'm making this public if I took that route.
