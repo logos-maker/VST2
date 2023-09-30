@@ -10,7 +10,7 @@ I could have kept the original API for VST2 plugins, but a specific company woul
 
 It's proven in court that you can't protect a API from common usage according to the the U.S. Supreme Court’s April 5 ruling in Google LLC v. Oracle America Inc. in 2021. And it's certainly the case that you can't protect an ABI with copyright within all reasonable doubt. Therefore this code can be used without any concerns of any third party licenses, as it only make use of the ABI, and any resemblance of the original API could be well motivated as it's not even prohibited to make use of the original API without any violation of any original licenses.
 
-This example, makes it possible for anyone to make an audio plugin in C code with a graphical editor, with the least amount of convolution. This makes compiled binaries usable in the most amount of music programs, with the least amount of code and dependencies. This makes it easy to support anything that has VST2 plugin capability. It currently only supports 64bit platforms. But I'm looking for a way to support 32 bit systems also with only one line of code, as I think 2 or 3 lines for that is to much.
+This example, makes it possible for anyone to make an audio plugin in C code with a graphical editor, with the least amount of convolution. This makes compiled binaries usable in the most amount of music programs, with the least amount of code and dependencies. This makes it easy to support anything that has VST2 plugin capability. It currently only supports 64-bit platforms. But I'm looking for a way to support 32-bit systems also with only one line of code, as I think 2 or 3 lines for that is too much.
 
 I have kept the code size as low as possible, and made it completable with Linux and Windows without any third party libraries, relying only on well established standards. This will make it compatible to the most systems even when compiling on a Linux machine and compile to Windows, and then running it on Linux using Wine without any type of tweaking.
 
@@ -22,16 +22,16 @@ This library was originally made for making classic programming following the st
 For painting graphics, it uses almost no code at all. And it has a separate file that connects to different platforms that is also small and different, depending on what platform the compiler uses.
 For graphics it uses character maps, an old concept widely used in the 80's and in 2D computer games. But in this case you can place them anywhere in the editor window side by side. It will soon be fixed so you can layer them with alpha channel with a little tweak of the code.
 
-Character maps is a very powerful concept, that gives very little code, for doing wondrous stuff. It can be used for animations and other stuff very easily and fits the needs for graphics in audio plugins very well. The posibility to make stand alone applications may be reintroduced later on, and also make the posiblility to make old school application programming and easy game development with the same ease of use later on.
+Character maps is a very powerful concept, that gives very little code, for doing wonderous stuff. It can be used for animations and other stuff very easily and fits the needs for graphics in audio plugins very well. The posibility to make stand alone applications may be reintroduced later on, and also make the posiblility to make old school application programming and easy game development with the same ease of use later on.
 
 ## Tutorials
 A tutorial on how to use and change this example will luckely be provided later on. This is only a showcase at the moment, even if it's fully working code.
 ## Compilation on Linux
 It can easily be done on a standard Linux machine with a command like...
 gcc generic_fx_code.c -o plugin.so -fPIC -shared
-...for a 64bit Linux plugin. Or...
+...for a 64-bit Linux plugin. Or...
 x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
-...for a 64bit Windows plugin.
+...for a 64-bit Windows plugin.
 
 
 
