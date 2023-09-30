@@ -12,7 +12,7 @@ It's proven in court that you can't protect a API from common usage according to
 
 This example, makes it possible for anyone to make an audio plugin in C code with a graphical editor, with the least amount of convolution. This makes compiled binaries usable in the most amount of music programs, with the least amount of code and dependencies. This makes it easy to support anything that has VST2 plugin capability. It currently only supports 64-bit platforms. But I'm looking for a way to support 32-bit systems also with only one line of code, as I think 2 or 3 lines for that is too much.
 
-I have kept the code size as low as possible, and made it completable with Linux and Windows without any third party libraries, relying only on well established standards. This will make it compatible to the most systems even when compiling on a Linux machine and compile to Windows, and then running it on Linux using Wine without any type of tweaking.
+I have kept the code size as low as possible, and made it compatible with Linux and Windows without any third party libraries, relying only on well established standards. This will make it compatible to the most systems even when compiling on a Linux machine and compile to Windows, and then running it on Linux using Wine without any type of tweaking.
 
 For the graphics part, it makes use of a RAW display buffer only for graphics. And I have made a simple library that makes GUI's for audio plugins possible with the least amount of code and dependencies.
 
