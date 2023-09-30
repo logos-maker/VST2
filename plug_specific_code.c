@@ -1,4 +1,4 @@
-// This is not open source, and can't be used in open source software <- Is the way to go? 
+ 
 // In this C file, you make the changes specific to your plug (that is not related to the plugin GUI).
 char brand_name[]   = "DSC";       // Place your brand name inside ""
 char product_name[] = "THELAY"; // Place your plug name inside ""
