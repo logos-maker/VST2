@@ -77,15 +77,6 @@ void chardis_draw(struct chardis *display, char filling, int x, int y){  // x y 
 Chardis library documentation:
 =============================================================================================
 
-
-Example for fast usage
-======================
-chardis statusbar; // struct for feild
-chardis_init(&statusbar, renderer, texture,40,1 ); // Initialization for usage. 40 columns and 1 row
-sprintf(statusbar.map,"text to display %d",var); // Write text to field an a variable to keep track of
-chardis_draw(&statusbar,0,0,0); // Draw feild to screen buffer to show with SDL_RenderPresent(renderer);
-
-
 Font specification
 ==================
 As a "font" or tiles, you need to have a SDL_Texture with graphics.
@@ -102,123 +93,16 @@ SDL_Texture *texture;
 SDL_RWops *rw = SDL_RWFromConstMem(fonten, sizeof(thefont)); // thefont is in this case the name of the array.
 texture = SDL_CreateTextureFromSurface(plug->r, SDL_LoadBMP_RW(rw, 1));
 
-
-Example code for getting started fast
-=====================================
-
-// Gives a 640 x 480 Window and displays mouse coordinates in window // what is program does
-// gcc test.c -o test -lSDL2           // command to compile program
-// ./test                              // command to run program
-
-#include <SDL2/SDL.h>
-#include "chardis_v7.h"
-
-SDL_Window *window;
-SDL_Renderer *renderer;
-SDL_Texture *texture;
-SDL_Event event;
-
-int x,y;
-
-void main(){
-   SDL_Init(SDL_INIT_VIDEO);
-
-   if (SDL_CreateWindowAndRenderer(600,200 , SDL_WINDOW_RESIZABLE, &window, &renderer)) { // 640 x 480 pixels
-       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window and renderer: %s", SDL_GetError());
-       return;
-   }
-   if(!(texture = SDL_CreateTextureFromSurface(renderer,SDL_LoadBMP("./font.bmp")))){
-     printf("%s\n",SDL_GetError());
-     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture from BMP file: %s\n",SDL_GetError()); return;
-   }
-
-   chardis statusbar; chardis_init(&statusbar, renderer, texture, 80, 60 ); // init... status statusbar
-   while (1) {
-        SDL_WaitEvent(&event); // SDL_PollEvent(&event);
-
-        if (event.type == SDL_QUIT) { // Is here as you cant exit the while loop with break inside the switch.
-            break;
-        }
-        switch(event.type){
-            case SDL_MOUSEBUTTONDOWN:{
-               statusbar.map[ chardis_mouse_pos( &statusbar, event.motion.x, event.motion.y) ] = 'X';
-               // SDL_Point p;
-               // SDL_GetMouseState(&p.x, &p.y);
-               // SDL_PointInRect(&p,(SDL_Rect*));
-            }
-            break;
-            case SDL_KEYUP: 
-               switch(event.key.keysym.sym){ // Fill in for keyboard usage. Names for keys is found here https://wiki.libsdl.org/SDL_Keycode
-                  case SDLK_LEFT:  break; // only an example, remove if not needed.
-                  case SDLK_RIGHT: break; // only an example, remove if not needed.
-                  case SDLK_UP:    break; // only an example, remove if not needed.
-                  case SDLK_DOWN:  break; // only an example, remove if not needed.
-              }
-            break;
-            case SDL_MOUSEMOTION: {
-               x = event.motion.x ;
-               y = event.motion.y ;
-            }
-            break;
-        }
-
-        SDL_SetRenderDrawColor(renderer, 0x70, 0x70, 0x70, 0x00); // Set background color
-        SDL_RenderClear(renderer);                                // Clean background
-
-        // Statusbar
-        sprintf(statusbar.map,"STATUS: %4d %4d",x,y);           // Statusbar apperance
-        chardis_draw(&statusbar,0,0,0); // Draw statubar on top
-
-        SDL_RenderPresent(renderer);         // Show everything in window.
-   }
-}
-
-
-Chardis - A library for a classic character display with SDL2
-=============================================================
-Old computers had a memory area that coresponded to the characters and 
-tiles drawn on the monitor screen. That gave a monospace font that could
-easily be used for making GUI's or displaying game graphics with custom tiles.
-Your tiles can use as many colors you want and has an alpha channel for transparancy.
-
-
-
 Character display functions
 ===========================
 To draw the character display you use the following function...
 void chardis_draw(struct chardis *display, char filling, int x, int y);  // X,Y Position to draw in SDL2 window. filling 0 for unfilled and 1 for filled.
 
 
-
 Availible helper functions
 --------------------------
 int  chardis_mouse_pos(struct chardis *display, int x, int y); // returns address of clicked char, or -1 if outside the character display
 int chardis_init(struct chardis *display, SDL_Renderer *renderer, SDL_Texture *texture,80,60 ); // Setting the struct to some default values. 80 columns, 60 rows.
-
-
-
-Why chardis was made
-====================
-I found myself writing new code for character displays when using SDL2 over and over.
-And recogniced that I didn't reuse code becuse the code got nested with uniqe things
-that i did. So made this library for for fast and easy reuse in my future programs.
-And kept it intentionally simple, to be able to make programs even faster and simpler.
-
-When you in the middle of making a program and you recogices that it would be handy
-with a character display, then it's often a burdon to write your own and retrofit 
-into your project. But this library makes this easier.
-
-
-
-Uses for chardis
-================
-* For debugging purposes, when terminal messages isn't the right choice.
-* An alternative to using the terminal window for user input and output.
-* For nostalgia, making programming more like how it was in the 80's.
-* Layering graphics in different colors using many character displays.
-* For making dropdown menu's and status bars.
-* Easy colaboration, as it uses BMP pictures for loading tiles and characters.
-
 
 */
 
