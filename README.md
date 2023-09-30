@@ -18,8 +18,11 @@ For the graphics part, it makes use of a RAW display buffer only for graphics. A
 
 This library was originally made for making classic programming following the style of programming form the 80's. And it's tweaked to be even more flexible and easy to use than it's ever has been. All code made for making standalone applications is stripped form the library at this moment. The code for making this was originally made for SDL2, but as this lacks compatibility for child windows that is necessary for audio plugins, I made my own comparability layer that replaces SDL2.
 
+## The graphics library used
+For painting graphics, it uses almost no code at all. And it has a separate file that connects to different platforms that is also small and different, depending on what platform the compiler uses.
+For graphics it uses character maps, an old concept widely used in the 80's and in 2D computer games. But in this case you can place them anywhere in the editor window side by side. It will soon be fixed so you can layer them with alpha channel with a little tweak of the code.
 
-
+Character maps is a very powerful concept, that gives very little code, for doing wondrous stuff. It can be used for animations and other stuff very easily and fits the needs for graphics in audio plugins very well. The posibillity to make stand alone applications may be reintroduced later on, and also make the possiblillity to make old school application programming and easy game development with the same ease of use later on.
 
 
 
