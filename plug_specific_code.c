@@ -30,7 +30,7 @@ void filter(plug_instance *plug,float filter_out[2],float filter_in[2],float cut
 						plug->filt_buff[RIGHT][i+1] = ((filter_in[RIGHT] - plug->filt_buff[RIGHT][i]) * cutoff) + plug->filt_buff[RIGHT][i];
                 }
                 plug->filt_buff[LEFT ][0] = filter_out[LEFT ] = plug->filt_buff[LEFT ][poles];
-                plug->filt_buff[RIGHT][0] = filter_out[RIGHT] = plug->filt_buff[RIGHT][poles]; // Uträknad sampling ut ifrån sista filtersteget.
+                plug->filt_buff[RIGHT][0] = filter_out[RIGHT] = plug->filt_buff[RIGHT][poles];
 }
 // Function is called by the host to make your plug process the audio buffer. Here the 'audio in' gets processed and sent to audio out. Audio levels is between -1 to +1
 void plugProcessSamplesFloat32(plugHeader *vstPlugin, float **inputs, float **outputs, int32_t sampleFrames){ plug_instance *plug = (plug_instance*)vstPlugin->object;
@@ -39,8 +39,8 @@ void plugProcessSamplesFloat32(plugHeader *vstPlugin, float **inputs, float **ou
         for(int j = 0; j < sampleFrames; j++){ // Loop trough all the samples in buffer. Put your audio algorithm inside here....
 		float filt_in[2], filt_out[2];
 
-                filt_in[LEFT ] = inputs[LEFT ] [j] * (plug->pth.knob[PAR_OVERDR]*4);//if(filt_in[LEFT ]>1)filt_in[LEFT ]=1;else if(filt_in[LEFT ]<-1)filt_in[LEFT ]=-1;
-                filt_in[RIGHT] = inputs[RIGHT] [j] * (plug->pth.knob[PAR_OVERDR]*4);//if(filt_in[RIGHT]>1)filt_in[RIGHT]=1;else if(filt_in[RIGHT]<-1)filt_in[RIGHT]=-1;
+                filt_in[LEFT ] = inputs[LEFT ] [j] * (plug->pth.knob[PAR_OVERDR]*4);
+                filt_in[RIGHT] = inputs[RIGHT] [j] * (plug->pth.knob[PAR_OVERDR]*4);
 		if(filt_in[LEFT ]>1)filt_in[LEFT ]=1;else if(filt_in[LEFT ]<-1)filt_in[LEFT ]=-1;
 		if(filt_in[RIGHT]>1)filt_in[RIGHT]=1;else if(filt_in[RIGHT]<-1)filt_in[RIGHT]=-1;
 
