@@ -58,7 +58,7 @@ struct plugHeader{ // A basic audio effect plugin using the ABI for VST2.4
         void (*plugProcessDoubleFunc)(plugHeader* effect, double** inputs, double** outputs, int32_t sampleFrames);// Used by host to make plug process 64bit audio buffers(double).
 	char reserved3_for_future[56];// reserved
 };
-typedef plugPtr (*hostCallback) (plugHeader* effect, int32_t opcode, int32_t index, plugPtr value, void* ptr, float opt); // VstIntPtr (*audioMasterCallback) i dokumentation
+typedef plugPtr (*hostCallback) (plugHeader* effect, int32_t opcode, int32_t index, plugPtr value, void* ptr, float opt); 
 enum { LEFT, RIGHT }; // 0 for left audio channel, 1 for right audio channel.
 enum { UNKNOWN, EFFECT_UNIT, SYNTHESIZER}; // 0 for unknown, 1 for effect unit, 2 for synthesizer.
 enum plugPropertiesFlags{
@@ -66,7 +66,7 @@ enum plugPropertiesFlags{
 	hasReplacing       = 16,  // Plug has function for writing audio out over the audio in buffer in 32bit floating point (float).
 	hasStateChunk      = 32,  // internal state in plug can be copied to host, for saving and loading audio projects in host.
 	hasDoubleReplacing = 4096,// Plug has function for writing audio out over the audio in buffer in 64bit floating point (double).
-	hasSynth	   = 256, // Plug is a VSTi.
+	hasSynth	   = 256, // Plug is a synthesizer.
 };
 enum opcodes{ // With notes if vestige or the FST header uses this op-codes
         plugEditOpen=14,        //Attention: Is called when the DAW whants the plug to open window.
@@ -147,7 +147,7 @@ void setknob(plug_instance* plug,int knob,float value){
 	plug->pth.knob[knob] = value ;
 	plug->hostcall(&plug->plughead, 0,   knob, 0, 0, plug->pth.knob[knob]); //audioMasterAutomate has op-code 0
 }
-void debug(char* text){ FILE *fp; fp=fopen("/home/seven/vst_utv/VST2_with_editor_in_C_clean/plugdebug.txt", "a"); fprintf(fp, "\n%s", text); fclose(fp); }
+
 // Function is called by the host to make your plug do and answer different things.
 plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t index, plugPtr value, void *ptr, float opt){ // Pointer to this function is used in the myplugin header
     plug_instance *plug = (plug_instance*)vstPlugin->object;
@@ -210,7 +210,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
 	case plugGetProgramName:	getProgramName(plug->program_no,(char*)ptr);	return true;	// Alternative to plugGetProgramNameIndexed as some hosts use this instead.	
         case plugGetParamName:          getParameterName(index, (char*)ptr);            return true;	// Host whant the plug to transfer the indexed parameter's name. 
         case plugGetParamText:          getParameterText(plug, index, (char*)ptr);	return true;	// 
-        case plugGetVstVersion:         return 2400; // kVstVersion;					// This plugin follows the VST2.4 ABI.
+        case plugGetVstVersion:         return 2400; // This plugin follows the VST2.4 ABI.
         case plugCanBeAutomated:        return true; // Return true if if the parameter is automatable. The index variable holds the parameter that the hosts asks about. In this example all parameters is automatable.
         case plugOpen:	   		for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++){ setknob(plug,i,presets[plug->program_no].param[i]); } return true; // Load preset 0. OP-Code is sent after the plug starts.
         case plugClose:			plug->instance_destroyed = 1; free(plug);	return true; // This op-code is sent by host before the plug gets deallocated from the system. To free resources and so on.
@@ -225,7 +225,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
 void  plugSetParameter(plugHeader *vstPlugin, int32_t index, float parameter){ plug_instance *plug = (plug_instance*)vstPlugin->object; plug->pth.knob[index] = parameter ; }// Host uses this to set parameter in plug
 float plugGetParameter(plugHeader *vstPlugin, int32_t index){ plug_instance *plug = (plug_instance*)vstPlugin->object; return (float)(plug->pth.knob[index]); }// Host uses this to get parameter from plug
 
-void* main(hostCallback vstHostCallback){ // New plug instances is created here. After plug load-in, it's the only known function for the host to run, that will give addresses for more functions for the host to run.
+void* main(hostCallback HostCallback){ // New plug instances is created here. After plug load-in, it's the only known function for the host to run, that will give addresses for more functions for the host to run.
     struct plugHeader myplugin = {                              // Declaration of the struct that a plugin must return to the host.
         .magicNumber =                                          1450406992, // Identifier that it's an audio plug
         .plugInstuctionDecoderFunc =                            plugInstructionDecoder,  // A callback adress for Host to send opcodes to plug
@@ -246,6 +246,6 @@ void* main(hostCallback vstHostCallback){ // New plug instances is created here.
     plug->plughead.object = plug;                                               // To be able to find all internal parameters.
     plug->instance_no = instances;                                              // We put the number here, what no?. Not strictly necessary.
     instances++;                                                                // How many instances of this plug, that has been started totally by the host.
-    plug->hostcall = vstHostCallback;						// Store callback to host, that was/is given by the host when this function is called.
+    plug->hostcall = HostCallback;						// Store callback to host, that was/is given by the host when this function is called.
     return plug; // Same as... return &(plug->plughead); // Send address to the plugs plug-header to the host. It's the address to all data that is uniqe for the plug instance.
 }
