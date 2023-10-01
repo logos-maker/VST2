@@ -1,5 +1,5 @@
 // This is an example of an audio effect unit, using the VST2.4 plugin ABI (ABI Application Binary Interface).
-// Note thas this example is not compatible with the VST2.4 API (Application Programming Interface). javid
+// Note thas this example is not compatible with the VST2.4 API (Application Programming Interface).
 // Known problems: Setings doen't seam to be restored by music programs any more.
 
 // Compile to windows...
@@ -11,26 +11,16 @@
 // x86_64-w64-mingw32-gcc plugin.c -o thelay.dll -fPIC -shared -lgdi32 // Create a 64bit VST2
 // i686-w64-mingw32-gcc plugin.c -o thelay.dll -fPIC -shared -lgdi32 // Create a 32bit VST2
 
-// Command for realtime text-log when using Bitwig as the plugin host...
-// tail -F ~/.BitwigStudio/log/engine.log // Terminal command for bitwig info about the plug, for debugging
-
 #include <stdint.h> // For new names for variable declarations.
 #include <stdbool.h>// For using true and false keywords.
 #include <stdio.h>  // For sprintf. Can maybe be replaced with something faster.
 #include <stdlib.h> // For malloc function. Can maybe be replaced with something faster or smaller?
-#include <string.h>   // för memcopy?
+#include <string.h> // For memcopy?
 
 // includes for opening editor on Linux or Windows
-#ifdef __linux__ //linux code goes here...
-	#include "libs/spg_plug.h"	// For window and graphics handeling in this case for Linux. SPG - Safe Plugin Graphics (plan is to make it multi platform).
-#elif _WIN32 // windows code goes here...
-	#include "windows.h"
-	#include "libs/win_spg.h" // Include my single header lib, SPG - Safe Plugin Graphics.
-#endif
-
-#include "libs/spg_chardis.h"	// For tiled graphics and animations.
-#include "gfx/knob.h" // Graphics for knobs in 32bit AARRGGBB BMP format.
-#include "gfx/bg.h"   // Graphics for background in 32bit AARRGGBB BMP format.
+#include "libs/ikigui.h"	// cross platform audio plugin GUI library for tiled graphics and animations.
+#include "gfx/knob.h"		// Embedded graphics for knobs in 32bit AARRGGBB BMP format.
+#include "gfx/bg.h"		// Embedded graphics for background in 32bit AARRGGBB BMP format.
 
 typedef int64_t plugPtr;
 typedef struct plugHeader plugHeader;
@@ -40,10 +30,10 @@ struct plugHeader{ // A basic audio effect plugin using the ABI for VST2.4
 	void(*deprecatedProcess)(void); // not used, is deprecated
         void  (*plugSetParameterFunc)(plugHeader* effect, int32_t index, float parameter);
         float (*plugGetParameterFunc)(plugHeader* effect, int32_t index);
-	int32_t number_of_programs;            // number of programs in plug
-	int32_t number_of_params;		// all programs are assumed to have numParams parameters
-	int32_t number_of_inputs;		// number of audio inputs in plug
-	int32_t number_of_outputs;	        // number of audio outputs in plug
+	int32_t number_of_programs;     // number of programs in plug
+	int32_t number_of_params;	// all programs are assumed to have numParams parameters
+	int32_t number_of_inputs;	// number of audio inputs in plug
+	int32_t number_of_outputs;	// number of audio outputs in plug
 	int32_t flags;			// see plugPropertiesFlags
 	plugPtr reserved_for_host[2];
 	int32_t initialDelay;	        // plug latency in samples
@@ -82,7 +72,7 @@ enum opcodes{ // With notes if vestige or the FST header uses this op-codes
         plugSetChunk=24,        //Host asks for an adress and length of the data segment that the host shall fill to restore an old state.
         plugCanBeAutomated =26, //For the host to check if it can automate a certain parameter.
         plugGetVendorString=47, //For the host to ask for the name of the author of the plug.
-        plugGetProductString=48,//For the host to ast for the vestige//FST
+        plugGetProductString=48,//
         plugCanDo=51,           //For the host to ask if the plug supports a sertain functionallity, the name of the functionallity is supplied in a text string by the host.
         plugGetVstVersion=58,   //Asks the plug what version of the VST ABI that was designed for.
 	plugGetProgramNameIndexed=29,//Gets the preset name by index, Bitwig uses this.
@@ -113,11 +103,10 @@ typedef struct{
     struct patch pth; // all data to save and restore by host be the op-codes plugGetChunk and plugSetChunk functions.
     int instance_no; // the number of this particular instance.
     int instance_destroyed; // is this instance is destroyed by the host.
-    int window_open;
     int program_no; // the current preset number (not used in this plug).
-    spg mywin ; // datat som relaterar till fönstret. NY!
-    chardis knober;
-    int nedtryck ;
+    ikigui_screen mywin ;
+    ikigui knober;
+    int pressed ;
     int ned_x ;
     int ned_y ;
     int old;
@@ -136,8 +125,8 @@ float samplerate; // not used, just here for the sake of the example.
 plug_instance *instance[1024]; // This is only an array of pointers, and no reserverad data for the instances.
 static int instances = 0 ; // It's incremented by one, each time main is called by host to create a new instance.
 
-spg_frame knob_anim;	// Raw global source graphics for knobs
-spg_frame bg;		// Raw global source graphics for background
+ikigui_frame knob_anim;	// Raw global source graphics for knobs
+ikigui_frame bg;	// Raw global source graphics for background
 
 #include "plug_specific_code.c"
 
@@ -154,17 +143,17 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
     switch(opCode){
 	case plugEditGetRect:     *(struct ERect**)ptr = &myrect ;   return true; break; // If host asks about the size of the editor size. Needed if you going to have an editor.
         case plugEditRedraw:                    
-                spg_get_events(&plug->mywin);
+                ikigui_get_events(&plug->mywin); // update window events
                 if((plug->old == 0) & (plug->mywin.mouse.buttons & MOUSE_LEFT)){ // Mouse down event
-                        plug->knob_selected = chardis_mouse_pos(&plug->knober, plug->mywin.mouse.x -16, plug->mywin.mouse.y-16);
+                        plug->knob_selected = ikigui_mouse_pos(&plug->knober, plug->mywin.mouse.x -16, plug->mywin.mouse.y-16);
                         if(-1 != plug->knob_selected){
-                                plug->nedtryck = 1; // Is in kob[0] area.
-                                plug->hostcall(&plug->plughead, 43, plug->knob_selected, 0, 0, 0); // Tell host we grabed the knob // audioMasterBeginEdit has op-code 43
+                                plug->pressed = 1;
+                                plug->hostcall(&plug->plughead, 43, plug->knob_selected, 0, 0, 0); // Tell host we grabed the knob 
                         }
                 }
-                if(plug->nedtryck){ // Change pressed knob according to relative mouse movement.
+                if(plug->pressed){ // Change pressed knob according to relative mouse movement.
                         float temp = plug->pth.knob[plug->knob_selected] + (float)(plug->ned_y - plug->mywin.mouse.y) * 0.01; 
-                        if(0 > temp)            plug->pth.knob[plug->knob_selected] = 0; // knob can't go bellow 0.
+                        if(0 > temp)            plug->pth.knob[plug->knob_selected] = 0; // knob can't go below 0.
                         else if(1 < temp)       plug->pth.knob[plug->knob_selected] = 1; // knob can't go above 1.
                         else                    plug->pth.knob[plug->knob_selected] = temp ; // New knob value.
                         
@@ -174,33 +163,32 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                 plug->old = plug->mywin.mouse.buttons;  // old value for buttons.
                 plug->ned_x = plug->mywin.mouse.x ;     // old value for x coordinate.
                 plug->ned_y = plug->mywin.mouse.y ;     // old value for y coodrinate.
-                if(plug->nedtryck && (plug->mywin.mouse.buttons == 0)){ // Release of mouse button
-                        plug->nedtryck = 0;
+                if(plug->pressed && (plug->mywin.mouse.buttons == 0)){ // Release of mouse button
+                        plug->pressed = 0;
                         plug->hostcall(&plug->plughead, 44,   plug->knob_selected, 0, 0, 0); // Tell host we ungrabed the knob // audioMasterEndEdit has op-code 44
                 }
                 for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++ ){
                         plug->knober.map[i] = (char)(plug->pth.knob[i] * 64) +31; // Select animation frame for knob value.
                 }
                 plug->knober.renderer->bg_color = 0x004466FF;
-                spg_blit(&plug->mywin.frame,&bg, 0, 0); // Paint background.
-                chardis_draw(&plug->knober,0,10,10);
-                spg_update_window(&plug->mywin);
+                ikigui_blit(&plug->mywin.frame,&bg, 0, 0); // Paint background.
+                ikigui_draw(&plug->knober,0,10,10);
+                ikigui_update_window(&plug->mywin);
         break;
         case plugEditOpen:{
-            spg_bmp_include(&knob_anim,knob_array);				// Load knob graphics.
-	    spg_bmp_include(&bg,bg_array);					// Load background graphics. 
-            spg_fill_bg(&knob_anim,(unsigned int)0x4466FF);			// set background color (rbg color) for knob array.
+            ikigui_bmp_include(&knob_anim,knob_array);				// Load knob graphics.
+	    ikigui_bmp_include(&bg,bg_array);					// Load background graphics. 
+            ikigui_fill_bg(&knob_anim,(unsigned int)0x4466FF);			// set background color (rbg color) for knob array.
 
-            spg_open_plugin_window(&plug->mywin,ptr,350,90);			// Open the editor window in host
-            chardis_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1);	// Set number of knobs in the tile array
-            chardis_tile_size(&plug->knober,64,56); 				// Set tile size of knob animation
+            ikigui_open_plugin_window(&plug->mywin,ptr,350,90);			// Open the editor window in host
+            ikigui_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1);	// Set number of knobs in the tile array
+            ikigui_tile_size(&plug->knober,64,56); 				// Set tile size of knob animation
 
-            plug->window_open = 1 ; // We do it last, so we don't try to draw anything before it's ready for drawing.
             return  1;//true;
         }
         break;
 	case plugGetPlugCategory:	return TYPE_OF_PLUG; // Return 1 if the plug is an effect, or 2 if it's a synthesizer.
-        case plugEditClose:             plug->window_open = 0;				return true;   // Close plug edit window, not the plug instance.
+        case plugEditClose:             						return true;   // Close plug edit window, not the plug instance.
         case plugGetProductString:      strcpy((char*)ptr, product_name);		return true;   // The name of the plug
         case plugGetVendorString:       strcpy((char*)ptr, brand_name);			return true;   // request for the vendor string (usually used in the UI for plugin grouping)
         case plugSetSampleRate:         samplerate = opt;				return true;   // Host tells plug the samplerate
