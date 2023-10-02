@@ -37,9 +37,14 @@ The core concept here is simplicity, and less is more. There is not much to lear
 A tutorial on how to use and change this example will luckely be provided later on. This is only a showcase at the moment, even if it's fully working code.
 ## Compilation on Linux
 It can easily be done on a standard Linux machine with a command like...
+```
+gcc generic_fx_code.c -o plugin.so -fPIC -shared
+```
 gcc generic_fx_code.c -o plugin.so -fPIC -shared
 ...for a 64-bit Linux plugin. Or...
+```
 x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
+```
 ...for a 64-bit Windows plugin.
 ## MinGW for compilation on Windows
 MinGW can be used to compile the code on Windows.
