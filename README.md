@@ -6,6 +6,9 @@ This code was written on Linux, and cross compiles to Windows. And it subrogates
 It present a strait forward way, to make a new plug even for beginners. With almost everything needed for a new plug in one small and simple well documented file. Perfect for future tutorials.
 And makes it possible to make VST2 plugs without any third party licences.
 
+## Making your own plug
+I would check out the plug_specific_code.c file. There you will find everything to make your own plug, by tweeking that file. 
+
 ## Subrogating the VST2 licence - Making VST2 development availabe for anyone
 To make this available and useful for anyone, this code-base only makes use of parts of the VST2 ABI.
 
