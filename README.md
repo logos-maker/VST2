@@ -3,6 +3,9 @@ This is the smallest amount of code, for making a cross platform VST2 audio plug
 
 This code was written on Linux, and cross compiles to Windows. And it subrogates the VST2 license. That makes it possible for anyone to make VST2 ABI compatible audio plugins, that will be fully useful in numerous music programs on Windows, developing an a Linux machine.
 
+It present a strait forward way, to make a new plug even for beginners. With almost everything needed for a new plug in one simple well documented file.
+And makes it possible to make VST2 plugs without any third party licences.
+
 ## Subrogating the VST2 licence - Making VST2 development availabe for anyone
 To make this available and useful for anyone, this code-base only makes use of parts of the VST2 ABI.
 
@@ -19,11 +22,16 @@ For the graphics part, it makes use of a RAW display buffer only for graphics. A
 This library was originally made for making classic programming following the style of programming form the 80's. And it's tweaked to be even more flexible and easy to use than it's ever has been. All code made for making standalone applications is stripped form the library at this moment. The code for making this was originally made for SDL2, but as this lacks compatibility for child windows that is necessary for audio plugins, I made my own compatibility layer that replaces SDL2.
 
 ## Ikigui - The graphics library used
-A new cross platform audio plugin GUI library for tiled graphics and animations, that uses almost no code at all. 
-It selects the platform specific code automatically, depending on what platform the compiler uses.
-For displaying graphics it uses character maps, an old concept widely used in the 80's and in 2D computer games. But in this case you can place them anywhere in the editor window.
+A new cross platform audio plugin GUI library for tiled graphics and animations. That uses almost no code at all, and is very easy to use.
+The name is a wordplay with the Japanese words 'iki' and 'ikigai', combined with GUI (Graphical User Interface).  
 
-Character maps is a very powerful concept, that gives very little code, for doing wonderous stuff. It can be used for animations and other stuff very easily and fits the needs for graphics in audio plugins very well. The posibility to make stand alone applications may be reintroduced later on, and also make the posiblility to make old school application programming and easy game development with the same ease of use.
+The platform specific code gets selected automatically, depending on what platform the compiler uses.
+
+For displaying graphics it uses character maps and bitmap graphics, an old concept widely used in the 80's and in 2D computer games. But in this case you can place them anywhere in the editor window.
+
+Character maps is a very powerful concept, that gives very little code, for doing wonderous stuff. It can be used for animations, text and other stuff very easily and fits the needs for graphics in audio plugins very well.
+
+The core concept here is simplicity, and less is more. There is not much to learn, and it givs fewer compatibillity issues.
 
 ## Tutorials
 A tutorial on how to use and change this example will luckely be provided later on. This is only a showcase at the moment, even if it's fully working code.
@@ -33,6 +41,7 @@ gcc generic_fx_code.c -o plugin.so -fPIC -shared
 ...for a 64-bit Linux plugin. Or...
 x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
 ...for a 64-bit Windows plugin.
-
+## MinGW for compilation on Windows
+MinGW can be used to compile the code on Windows.
 
 
