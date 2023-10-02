@@ -48,4 +48,5 @@ x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
 ## MinGW for compilation on Windows
 MinGW can be used to compile the code on Windows.
 
-
+## Licences
+The code will soon be dual-licensed for a small fee for closed source projects. More info later.
