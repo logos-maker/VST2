@@ -3,7 +3,7 @@ This is the smallest amount of code, for making a cross platform VST2 audio plug
 
 This code was written on Linux, and cross compiles to Windows. And it subrogates the VST2 license. That makes it possible for anyone to make VST2 ABI compatible audio plugins, that will be fully useful in numerous music programs on Windows, developing an a Linux machine.
 
-It present a strait forward way, to make a new plug even for beginners. With almost everything needed for a new plug in one simple well documented file.
+It present a strait forward way, to make a new plug even for beginners. With almost everything needed for a new plug in one small and simple well documented file. Perfect for future tutorials.
 And makes it possible to make VST2 plugs without any third party licences.
 
 ## Subrogating the VST2 licence - Making VST2 development availabe for anyone
