@@ -19,8 +19,6 @@
 
 // includes for opening editor on Linux or Windows
 #include "libs/ikigui.h"	// cross platform audio plugin GUI library for tiled graphics and animations.
-#include "gfx/knob.h"		// Embedded graphics for knobs in 32bit AARRGGBB BMP format.
-#include "gfx/bg.h"		// Embedded graphics for background in 32bit AARRGGBB BMP format.
 
 typedef int64_t plugPtr;
 typedef struct plugHeader plugHeader;
@@ -97,20 +95,22 @@ struct ERect myrect = {
 struct patch{ // all data to save and restore by host when saving and loading audio projects.
     float knob[MAX_NUMBER_OF_PARAMETERS];
 };
+
 typedef struct{
     struct plugHeader plughead; // It must be first in the struct. Note that each instance has this header.
     plugPtr (*hostcall) (plugHeader* effect, int32_t opcode, int32_t index, plugPtr value, void* ptr, float opt); // VstIntPtr (*audioMasterCallback) i dokumentation
     struct patch pth; // all data to save and restore by host be the op-codes plugGetChunk and plugSetChunk functions.
     int instance_no; // the number of this particular instance.
-    int instance_destroyed; // is this instance is destroyed by the host.
+    int instance_destroyed; // is this instance is destroyed by the host. <-can be removed av not used
     int program_no; // the current preset number (not used in this plug).
-    ikigui_screen mywin ;
-    ikigui knober;
     int pressed ;
-    int ned_x ;
-    int ned_y ;
+    int down_x ;
+    int down_y ;
     int old;
     int knob_selected;
+    ikigui_screen mywin ;
+    // uniqe variables for this plug - move these to the other file plug_specific_code.c ?
+    ikigui knober;
     float delaybuffer[2][100000];
     int delaytap;
     float filt_buff[2][16];
@@ -118,15 +118,12 @@ typedef struct{
 
 struct preset{ // struct used for internal presets in the plug
 	char preset_name[24];
-	float param[MAX_NUMBER_OF_PARAMETERS]; // Maybe not optimal but keeps the specific simple and understandable.
+	float param[MAX_NUMBER_OF_PARAMETERS]; // Maybe not optimal but keeps it simple and understandable.
 };
 
 float samplerate; // not used, just here for the sake of the example.
 plug_instance *instance[1024]; // This is only an array of pointers, and no reserverad data for the instances.
 static int instances = 0 ; // It's incremented by one, each time main is called by host to create a new instance.
-
-ikigui_frame knob_anim;	// Raw global source graphics for knobs
-ikigui_frame bg;	// Raw global source graphics for background
 
 #include "plug_specific_code.c"
 
@@ -152,7 +149,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                         }
                 }
                 if(plug->pressed){ // Change pressed knob according to relative mouse movement.
-                        float temp = plug->pth.knob[plug->knob_selected] + (float)(plug->ned_y - plug->mywin.mouse.y) * 0.01; 
+                        float temp = plug->pth.knob[plug->knob_selected] + (float)(plug->down_y - plug->mywin.mouse.y) * 0.01; 
                         if(0 > temp)            plug->pth.knob[plug->knob_selected] = 0; // knob can't go below 0.
                         else if(1 < temp)       plug->pth.knob[plug->knob_selected] = 1; // knob can't go above 1.
                         else                    plug->pth.knob[plug->knob_selected] = temp ; // New knob value.
@@ -161,8 +158,8 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                 }
                 // values for recognicing changes in mousemovements and mouse buttons.
                 plug->old = plug->mywin.mouse.buttons;  // old value for buttons.
-                plug->ned_x = plug->mywin.mouse.x ;     // old value for x coordinate.
-                plug->ned_y = plug->mywin.mouse.y ;     // old value for y coodrinate.
+                plug->down_x = plug->mywin.mouse.x ;     // old value for x coordinate.
+                plug->down_y = plug->mywin.mouse.y ;     // old value for y coodrinate.
                 if(plug->pressed && (plug->mywin.mouse.buttons == 0)){ // Release of mouse button
                         plug->pressed = 0;
                         plug->hostcall(&plug->plughead, 44,   plug->knob_selected, 0, 0, 0); // Tell host we ungrabed the knob // audioMasterEndEdit has op-code 44
@@ -170,20 +167,13 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                 for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++ ){
                         plug->knober.map[i] = (char)(plug->pth.knob[i] * 64) +31; // Select animation frame for knob value.
                 }
-                plug->knober.renderer->bg_color = 0x004466FF;
-                ikigui_blit(&plug->mywin.frame,&bg, 0, 0); // Paint background.
-                ikigui_draw(&plug->knober,0,10,10);
+		
+		draw_graphics(plug);
+
                 ikigui_update_window(&plug->mywin);
         break;
         case plugEditOpen:{
-            ikigui_bmp_include(&knob_anim,knob_array);				// Load knob graphics.
-	    ikigui_bmp_include(&bg,bg_array);					// Load background graphics. 
-            ikigui_fill_bg(&knob_anim,(unsigned int)0x4466FF);			// set background color (rbg color) for knob array.
-
-            ikigui_open_plugin_window(&plug->mywin,ptr,350,90);			// Open the editor window in host
-            ikigui_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1);	// Set number of knobs in the tile array
-            ikigui_tile_size(&plug->knober,64,56); 				// Set tile size of knob animation
-
+	    prepare_graphics(plug,ptr);
             return  1;//true;
         }
         break;
