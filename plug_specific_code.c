@@ -13,16 +13,14 @@ ikigui_frame knob_anim;	// Raw global source graphics holder for knobs
 ikigui_frame bg;	// Raw global source graphics holder for background
 
 void draw_graphics(plug_instance *plug){
-	ikigui_blit(&plug->mywin.frame,&bg, 0, 0); 	// Paint background.
-	ikigui_draw(&plug->knober,0,10,10);		// Paint tilemap for the knobs.
+	ikigui_blit(&plug->mywin.frame,&bg, 0, 0); // Draw gackground.
+	ikigui_draw(&plug->knober,0,10,10);	   // Draw knobs.
 }
 void prepare_graphics(plug_instance *plug,void *ptr){
 	ikigui_bmp_include(&knob_anim,knob_array);			// Load knob graphics.
-	ikigui_bmp_include(&bg,bg_array);				// Load background graphics. 
-	ikigui_fill_bg(&knob_anim,(unsigned int)0x4466FF);		// set background color (rbg color) for the alpha channel.
+	ikigui_bmp_include(&bg,bg_array);				// Load background graphics.
 	ikigui_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1);	// Set number of knobs in the tile array
 	ikigui_tile_size(&plug->knober,64,56); 				// Set tile size of knob animation
-
 	ikigui_open_plugin_window(&plug->mywin,ptr,350,90);		// Open the editor window in host
 }
 
@@ -44,8 +42,8 @@ struct preset presets[NUMBER_OF_PRESETS] = {	// the preset presets inside the pl
 void getParameterName(int32_t index,  char* ptr){ // Names of all user parameters in the plug. Max 7 characters for each name(8 if the implicit \n is included), but the spec is futile.
         switch(index){ // Copy the name of the the right paramter to be displayed in the host.
                 case  0: strcpy(ptr, "DELAY");          break; // Name of the first  parameter is between ""
-                case  1: strcpy(ptr, "CUTOFF");         break; // Name of the second parameter is between ""
-                case  2: strcpy(ptr, "OVERDRIVE");	break; // Is "to long" but works. Hosts allows longer names for compatibiliy reasons.
+                case  1: strcpy(ptr, "OVERDRIVE");         break; // Name of the second parameter is between ""
+                case  2: strcpy(ptr, "CUTOFF");	break; // Is "to long" but works. Hosts allows longer names for compatibiliy reasons.
                 case  3: strcpy(ptr, "FEEDBACK");       break; // ...as almost no plugins follows this limit.
                 case  4: strcpy(ptr, "DRY/WET");        break;
                 default: strcpy(ptr, "???"); break; // A default name, reminding to add create any missing case for some parameter.
