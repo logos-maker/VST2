@@ -1,3 +1,5 @@
+![](./gfx/plugin.png)
+
 # VST2 API example with editor, for Windows and Linux
 This is the smallest amount of code, for making a cross platform VST2 audio plugin with a graphical editor yet.
 
