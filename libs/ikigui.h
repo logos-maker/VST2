@@ -18,10 +18,10 @@ typedef struct ikigui {
    unsigned char  scaling;     // 1 displays graphics as in BMP, 2 doubles pixels in x and Y.
 } ikigui;
 
-int ikigui_init(struct ikigui *display, ikigui_frame *renderer, ikigui_frame *texture, int columns, int rows ){
+int ikigui_init(struct ikigui *display, ikigui_frame *renderer, ikigui_frame *texture, int columns, int rows,int width,int hight ){
    display->map = calloc(columns*rows,sizeof(char));
-   display->char_width = 8 ;    // Set to a default value
-   display->char_hight = 8 ;    // Set to a default value
+   display->char_width = width ;// Set to a default value
+   display->char_hight = hight ;// Set to a default value
    display->columns = columns ; // Set to a default value
    display->rows = rows ;       // Set to a default value
    display->scaling = 1;        // Set to a default value
