@@ -17,11 +17,10 @@ void draw_graphics(plug_instance *plug){
 	ikigui_draw(&plug->knober,0,10,10);	   // Draw knobs.
 }
 void prepare_graphics(plug_instance *plug,void *ptr){
-	ikigui_bmp_include(&knob_anim,knob_array);			// Load knob graphics.
-	ikigui_bmp_include(&bg,bg_array);				// Load background graphics.
-	ikigui_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1);	// Set number of knobs in the tile array
-	ikigui_tile_size(&plug->knober,64,56); 				// Set tile size of knob animation
-	ikigui_open_plugin_window(&plug->mywin,ptr,350,90);		// Open the editor window in host
+	ikigui_bmp_include(&knob_anim,knob_array);				// Load knob graphics.
+	ikigui_bmp_include(&bg,bg_array);					// Load background graphics.
+	ikigui_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
+	ikigui_open_plugin_window(&plug->mywin,ptr,350,90);			// Open the editor window in host.
 }
 
 //********************
