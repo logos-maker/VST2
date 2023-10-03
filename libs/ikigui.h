@@ -8,8 +8,8 @@
 #endif
 
 typedef struct ikigui {
-   ikigui_frame   *renderer;   // The renderer to use for drawing the character display
-   ikigui_frame   *texture;    // The texture with tiles for the monospace font
+   ikigui_frame   *renderer;   // The renderer to use for drawing the character display		<- destination
+   ikigui_frame   *texture;    // The texture with tiles for the monospace font			<- source
    unsigned char  columns;     // Number of columns in the character display
    unsigned char  rows;        // Number of rows in the character display
    unsigned char  char_width;  // The pixel width of the characters in the texture
@@ -69,11 +69,14 @@ void ikigui_draw(struct ikigui *display, char filling, int x, int y){  // x y is
       for(int j = 0 ; j < w ; j++ ){
           dstrect.x = (j * dstrect.w) + x;
           srcrect.x = srcrect.w * (display->map[i*w + j] - 32) ; // -32 becauce the ASCII code should match to where you catch characters from texture.
-          if(srcrect.x <0)srcrect.x = 0; // Program can segment fault without this line, this line was not in the original library.
+          if(srcrect.x <0)srcrect.x = 0; // Program can segment fault without this line.
 
           // Draw the character buffer to window.
-          if(filling)ikigui_blit_part_filled(display->renderer,display->texture, dstrect.x, dstrect.y, &srcrect);
-          else ikigui_blit_part(display->renderer,display->texture, dstrect.x, dstrect.y, &srcrect);
+	  switch(filling){
+		  case 0:       ikigui_blit_part       (display->renderer,display->texture, dstrect.x, dstrect.y, &srcrect);	break;
+		  case 1:	ikigui_blit_part_filled(display->renderer,display->texture, dstrect.x, dstrect.y, &srcrect);	break;
+		  case 2:	ikigui_blit_part_fast  (display->renderer,display->texture, dstrect.x, dstrect.y, &srcrect);	break;
+	  }
       }
    }        
 }

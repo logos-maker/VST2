@@ -100,6 +100,34 @@ void set_pixel(ikigui_frame *mywin,int x,int y, unsigned int argb_color){
         mywin->pixels[mywin->w*hflip(mywin->h,y)+x]=argb_color;
 }
 
+void ikigui_blit_part(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, ikigui_rect *part){ // Draw area
+        if((x<0) || (y<0))return; // sheilding crash
+        if(mywin->w <= (x+part->w))return; // shielding crash
+        if(mywin->h <= (y+part->h))return; // shielding crash
+
+        for(int j = 0 ; j < part->h ; j++){ // vertical
+                for(int i = 0 ; i < part->w ; i++){   // horizontal
+			unsigned int color = mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)];
+                        unsigned int temp = frame->pixels[i+part->x+frame->w*(j+part->y)];
+
+                        // Fixed point math
+                        unsigned char alpha = temp >> 24; // Alpha channel
+                        unsigned char alpha_inv = ~alpha;
+                        unsigned char rf =  (temp&0xff0000)>>16;	// Red forground
+                        unsigned char gf =  (temp&0xff00)>>8;		// Green forground
+                        unsigned char bf = temp&0xff;			// Blue forground
+                        unsigned char rb = (color&0xff0000)>>16;	// Red beckground
+                        unsigned char gb = (color&0xff00)>>8;		// Red background
+                        unsigned char bb = color&0xff;			// Blue background                
+                        unsigned char ro = (alpha_inv*rb + alpha*rf)>>8;   // background + forground
+                        unsigned char go = (alpha_inv*gb + alpha*gf)>>8;   // background + forground
+                        unsigned char bo = (alpha_inv*bb + alpha*bf)>>8;   // background + forground
+
+			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] = (unsigned int)((ro << 16) + (go<< 8) + bo); 
+                }
+        }
+}
+
 void ikigui_blit_part_filled(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, ikigui_rect *part){ // Draw area
         if((x<0) || (y<0))return; // sheilding crash
         if(mywin->w <= (x+part->w))return; // shielding crash
@@ -124,12 +152,12 @@ void ikigui_blit_part_filled(ikigui_frame *mywin,ikigui_frame *frame, int x, int
                         unsigned char go = (alpha_inv*gb + alpha*gf)>>8;   // background + forground
                         unsigned char bo = (alpha_inv*bb + alpha*bf)>>8;   // background + forground
 
-			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] = frame->pixels[i+part->x+frame->w*(j+part->y)];
+			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] = (unsigned int)((ro << 16) + (go<< 8) + bo); 
                 }
         }
 }
 
-void ikigui_blit_part(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, ikigui_rect *part){ // Draw area
+void ikigui_blit_part_fast(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, ikigui_rect *part){ // Draw area
         if((x<0) || (y<0))return; // shelding crash
         if(mywin->w <= (x+part->w))return; // shelding crash
         if(mywin->h <= (y+part->h))return; // shelding crash
