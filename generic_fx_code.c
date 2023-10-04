@@ -214,7 +214,7 @@ void* main(hostCallback HostCallback){ // New plug instances is created here. Af
         .number_of_inputs =                                     2, // audio inputs
         .number_of_outputs =                                    2, // audio outputs
         .flags = hasReplacing | hasStateChunk | hasEditor,      // Bitflags for things this plugin supports
-        .version = VERSION_NUMBER_OF_THIS_SPECICIC_PLUG,        // plug-in version, not VST version.
+        .version = VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG,        // plug-in version, not VST version.
         .plugProcessFloatFunc = plugProcessSamplesFloat32,      // Name of the function where the audio processing is done.
         .plugProcessDoubleFunc = NULL,                          // No such function in this plug. Use for funtionpointer to 64bit floating point handeling
     };

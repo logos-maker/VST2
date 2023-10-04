@@ -12,11 +12,11 @@
 ikigui_frame knob_anim;	// Raw global source graphics holder for knobs
 ikigui_frame bg;	// Raw global source graphics holder for background
 
-void draw_graphics(plug_instance *plug){
+void draw_graphics(plug_instance *plug){ 	   // The daw calls this when it wants to redraw the editor  
 	ikigui_blit(&plug->mywin.frame,&bg, 0, 0); // Draw gackground.
 	ikigui_draw(&plug->knober,0,10,10);	   // Draw knobs.
 }
-void prepare_graphics(plug_instance *plug,void *ptr){
+void prepare_graphics(plug_instance *plug,void *ptr){	// The daw calls this when it wants to open the editor window.
 	ikigui_bmp_include(&knob_anim,knob_array);				// Load knob graphics.
 	ikigui_bmp_include(&bg,bg_array);					// Load background graphics.
 	ikigui_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
@@ -26,10 +26,10 @@ void prepare_graphics(plug_instance *plug,void *ptr){
 //********************
 //   Plugin settings
 //********************
-
-char brand_name[]   = "DSC";       // Place your brand name inside ""
-char product_name[] = "THELAY"; // Place your plug name inside ""
-#define VERSION_NUMBER_OF_THIS_SPECICIC_PLUG 1  // Version number for this plug is set to 1. Increase number for your plug when you make improvements.
+VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG
+char brand_name[]   = "DSC";    // Place your brand name inside ""
+char product_name[] = "THELAY";	// Place your plug name inside ""
+#define VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG 1  // Version number for this plug is set to 1. Increase number for your plug when you make improvements.
 #define NUMBER_OF_PARAMETERS 5                  // Number of parameters in plug. Change that to the number of parameters you need, but don't excede 128.
 #define NUMBER_OF_PRESETS 3			// Number of presets inside the plug.
 #define TYPE_OF_PLUG EFFECT_UNIT // Set this to EFFECT_UNIT or SYNTHESIZER
@@ -41,11 +41,11 @@ struct preset presets[NUMBER_OF_PRESETS] = {	// the preset presets inside the pl
 void getParameterName(int32_t index,  char* ptr){ // Names of all user parameters in the plug. Max 7 characters for each name(8 if the implicit \n is included), but the spec is futile.
         switch(index){ // Copy the name of the the right paramter to be displayed in the host.
                 case  0: strcpy(ptr, "DELAY");          break; // Name of the first  parameter is between ""
-                case  1: strcpy(ptr, "OVERDRIVE");         break; // Name of the second parameter is between ""
-                case  2: strcpy(ptr, "CUTOFF");	break; // Is "to long" but works. Hosts allows longer names for compatibiliy reasons.
+                case  1: strcpy(ptr, "OVERDRIVE");      break; // Name of the second parameter is between ""
+                case  2: strcpy(ptr, "CUTOFF");		break; // Is "to long" but works. Hosts allows longer names for compatibiliy reasons.
                 case  3: strcpy(ptr, "FEEDBACK");       break; // ...as almost no plugins follows this limit.
                 case  4: strcpy(ptr, "DRY/WET");        break;
-                default: strcpy(ptr, "???"); break; // A default name, reminding to add create any missing case for some parameter.
+                default: strcpy(ptr, "???");		break; // A default name, reminding to add create any missing case for some parameter.
         }
 };
 void getParameterText(plug_instance *plug,int32_t index,char* ptr){ if(NULL!=gcvt(plug->pth.knob[index], 6, ptr)) return; }; // Host whant the plug indexed parameter value in text. if(NULL is for not giving compilation warnings.
