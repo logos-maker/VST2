@@ -19,7 +19,7 @@ typedef struct ikigui {
 } ikigui;
 
 int ikigui_init(struct ikigui *display, ikigui_frame *renderer, ikigui_frame *texture, int columns, int rows,int width,int hight ){
-   display->map = calloc(columns*rows,sizeof(char));
+   display->map = (char*)calloc(columns*rows,sizeof(char));
    display->char_width = width ;// Set to a default value
    display->char_hight = hight ;// Set to a default value
    display->columns = columns ; // Set to a default value
