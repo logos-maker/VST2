@@ -2,6 +2,7 @@
 
 # VST2 ABI example with editor, for Windows and Linux
 This is the smallest amount of code, for making a cross platform VST2 audio plugin with a graphical editor yet.
+It crosscompile to different platforms with 100% identical code.
 
 This code was written on Linux, and cross compiles to Windows or can be compiled on Windows with MinGW. And it subrogates the VST2 license. That makes it possible for anyone to make VST2 ABI compatible audio plugins, that will be fully useful in numerous music programs on Windows, developing an a Linux machine, or Windows with MinGW.
 
