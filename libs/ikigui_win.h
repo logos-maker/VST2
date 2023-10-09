@@ -124,7 +124,7 @@ void ikigui_blit_part(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, iki
         for(int j = 0 ; j < part->h ; j++){ // vertical
                 for(int i = 0 ; i < part->w ; i++){   // horizontal
 			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] 
-			= alpha_cannel(mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)], frame->pixels[i+part->x+frame->w*(j+part->y)]);
+			= alpha_channel(mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)], frame->pixels[i+part->x+frame->w*(j+part->y)]);
                 }
         }
 }
@@ -137,7 +137,7 @@ void ikigui_blit_part_filled(ikigui_frame *mywin,ikigui_frame *frame, int x, int
         for(int j = 0 ; j < part->h ; j++){ // vertical
                 for(int i = 0 ; i < part->w ; i++){   // horizontal
 			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] 
-			= alpha_cannel(mywin->bg_color, frame->pixels[i+part->x+frame->w*(j+part->y)]);
+			= alpha_channel(mywin->bg_color, frame->pixels[i+part->x+frame->w*(j+part->y)]);
                 }
         }
 }
