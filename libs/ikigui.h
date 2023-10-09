@@ -1,8 +1,8 @@
-// A simple C library for oldschool characters and tiles.
+// for oldschool monospace characters and graphic tiles.
 
-#ifdef __linux__ //linux code goes here...
+#ifdef __linux__ //linux specific code goes here...
 	#include "ikigui_lin.h"	// For window and graphics handling in this case for Linux.
-#elif _WIN32 // windows code goes here...
+#elif _WIN32 // windows specific code goes here...
 	#include "windows.h"
 	#include "ikigui_win.h" // For window and graphics handling in this case for Windows.
 #endif
@@ -20,19 +20,14 @@ typedef struct ikigui {
 
 int ikigui_init(struct ikigui *display, ikigui_frame *renderer, ikigui_frame *texture, int columns, int rows,int width,int hight ){
    display->map = (char*)calloc(columns*rows,sizeof(char));
-   display->char_width = width ;// Set to a default value
-   display->char_hight = hight ;// Set to a default value
+   display->char_width = width ;// Set to input given as input by library user.
+   display->char_hight = hight ;// Set to input given as input by library user.
    display->columns = columns ; // Set to a default value
    display->rows = rows ;       // Set to a default value
    display->scaling = 1;        // Set to a default value
    display->renderer = renderer ; // Set to renderer given as input by library user.
    display->texture = texture ;   // Set to texture given as input by library user.
    return columns * rows ;
-}
-
-void ikigui_tile_size(struct ikigui *display,int width,int hight){ // can be used after ikigui_init
-   display->char_width = width ;    // Set to a default value
-   display->char_hight = hight ;    // Set to a default value
 }
 
 void ikigui_free(struct ikigui *display){
@@ -70,9 +65,8 @@ void ikigui_draw(struct ikigui *display, char filling, int x, int y){  // x y is
           dstrect.x = (j * dstrect.w) + x;
           srcrect.x = srcrect.w * (display->map[i*w + j] - 32) ; // -32 becauce the ASCII code should match to where you catch characters from texture.
           if(srcrect.x <0)srcrect.x = 0; // Program can segment fault without this line.
-
-          // Draw the character buffer to window.
-	  switch(filling){
+         
+	  switch(filling){ // Draw the character buffer to window.
 		  case 0:       ikigui_blit_part       (display->renderer,display->texture, dstrect.x, dstrect.y, &srcrect);	break;
 		  case 1:	ikigui_blit_part_filled(display->renderer,display->texture, dstrect.x, dstrect.y, &srcrect);	break;
 		  case 2:	ikigui_blit_part_fast  (display->renderer,display->texture, dstrect.x, dstrect.y, &srcrect);	break;
@@ -80,4 +74,3 @@ void ikigui_draw(struct ikigui *display, char filling, int x, int y){  // x y is
       }
    }        
 }
-

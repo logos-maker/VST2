@@ -93,11 +93,27 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
 int hflip(int hight,int row){ // invert vertical axis
         return (hight - row)-1;
 }
-unsigned int get_pixel(ikigui_frame *mywin,int x,int y, unsigned int argb_color){
-        return mywin->pixels[mywin->w*hflip(mywin->h,y)+x];
+
+unsigned int alpha_channel(unsigned int color,unsigned int temp){ // done with fixed point math
+	unsigned char alpha = temp >> 24; // Alpha channel
+	unsigned char alpha_inv = ~alpha;
+	unsigned char rf =  (temp&0xff0000)>>16;	// Red forground
+	unsigned char gf =  (temp&0xff00)>>8;		// Green forground
+	unsigned char bf = temp&0xff;			// Blue forground
+	unsigned char rb = (color&0xff0000)>>16;	// Red beckground
+	unsigned char gb = (color&0xff00)>>8;		// Red background
+	unsigned char bb = color&0xff;			// Blue background                
+	unsigned char ro = (alpha_inv*rb + alpha*rf)>>8;   // background + forground
+	unsigned char go = (alpha_inv*gb + alpha*gf)>>8;   // background + forground
+	unsigned char bo = (alpha_inv*bb + alpha*bf)>>8;   // background + forground
+	return (unsigned int)((ro << 16) + (go<< 8) + bo); 
 }
-void set_pixel(ikigui_frame *mywin,int x,int y, unsigned int argb_color){
-        mywin->pixels[mywin->w*hflip(mywin->h,y)+x]=argb_color;
+
+void ikigui_fill_bg(ikigui_frame *frame,unsigned int color){// A background color for automatic filling of transparent pixels.
+	// to precalc graphics for usage with ikigui_blit_part_fast() for faster graphics. Can be convinient in some cases.
+        for(int i = 0 ; i < frame->size ; i++){
+                frame->pixels[i] = alpha_channel(color,frame->pixels[i]);
+        }
 }
 
 void ikigui_blit_part(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, ikigui_rect *part){ // Draw area
@@ -107,23 +123,8 @@ void ikigui_blit_part(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, iki
 
         for(int j = 0 ; j < part->h ; j++){ // vertical
                 for(int i = 0 ; i < part->w ; i++){   // horizontal
-			unsigned int color = mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)];
-                        unsigned int temp = frame->pixels[i+part->x+frame->w*(j+part->y)];
-
-                        // Fixed point math
-                        unsigned char alpha = temp >> 24; // Alpha channel
-                        unsigned char alpha_inv = ~alpha;
-                        unsigned char rf =  (temp&0xff0000)>>16;	// Red forground
-                        unsigned char gf =  (temp&0xff00)>>8;		// Green forground
-                        unsigned char bf = temp&0xff;			// Blue forground
-                        unsigned char rb = (color&0xff0000)>>16;	// Red beckground
-                        unsigned char gb = (color&0xff00)>>8;		// Red background
-                        unsigned char bb = color&0xff;			// Blue background                
-                        unsigned char ro = (alpha_inv*rb + alpha*rf)>>8;   // background + forground
-                        unsigned char go = (alpha_inv*gb + alpha*gf)>>8;   // background + forground
-                        unsigned char bo = (alpha_inv*bb + alpha*bf)>>8;   // background + forground
-
-			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] = (unsigned int)((ro << 16) + (go<< 8) + bo); 
+			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] 
+			= alpha_cannel(mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)], frame->pixels[i+part->x+frame->w*(j+part->y)]);
                 }
         }
 }
@@ -133,26 +134,10 @@ void ikigui_blit_part_filled(ikigui_frame *mywin,ikigui_frame *frame, int x, int
         if(mywin->w <= (x+part->w))return; // shielding crash
         if(mywin->h <= (y+part->h))return; // shielding crash
 
-        unsigned int color = mywin->bg_color;
-
         for(int j = 0 ; j < part->h ; j++){ // vertical
                 for(int i = 0 ; i < part->w ; i++){   // horizontal
-                        unsigned int temp = frame->pixels[i+part->x+frame->w*(j+part->y)];
-
-                        // Fixed point math
-                        unsigned char alpha = temp >> 24; // Alpha channel
-                        unsigned char alpha_inv = ~alpha;
-                        unsigned char rf =  (temp&0xff0000)>>16;	// Red forground
-                        unsigned char gf =  (temp&0xff00)>>8;		// Green forground
-                        unsigned char bf = temp&0xff;			// Blue forground
-                        unsigned char rb = (color&0xff0000)>>16;	// Red beckground
-                        unsigned char gb = (color&0xff00)>>8;		// Red background
-                        unsigned char bb = color&0xff;			// Blue background                
-                        unsigned char ro = (alpha_inv*rb + alpha*rf)>>8;   // background + forground
-                        unsigned char go = (alpha_inv*gb + alpha*gf)>>8;   // background + forground
-                        unsigned char bo = (alpha_inv*bb + alpha*bf)>>8;   // background + forground
-
-			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] = (unsigned int)((ro << 16) + (go<< 8) + bo); 
+			mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] 
+			= alpha_cannel(mywin->bg_color, frame->pixels[i+part->x+frame->w*(j+part->y)]);
                 }
         }
 }
@@ -194,25 +179,6 @@ void ikigui_bmp_include(ikigui_frame *frame,const unsigned char* bmp_incl){
                 }
         }
         frame->size = frame->w * frame->h ;
-}
-
-void ikigui_fill_bg(ikigui_frame *frame,unsigned int color){// A background color for automatic filling of transparent pixels.
-        for(int i = 0 ; i < frame->size ; i++){
-                unsigned int temp = frame->pixels[i];
-
-                float alpha = ((float)(temp >> 24)) / 255; // Alpha channel
-                float rf =  (float)((unsigned int)(temp&0xff0000)>>16); // Red forground
-                float gf =  (float)((unsigned int)(temp&0xff00)>>8);    // Green forground
-                float bf =  (float)((unsigned int)(temp&0xff));         // Blue forground
-                float rb = (float)((unsigned int)(color&0xff0000)>>16); // Red beckground
-                float gb = (float)((unsigned int)(color&0xff00)>>8);    // Red background
-                float bb = (float)((unsigned int)color&0xff);           // Blue background                
-                unsigned char ro = (char)((1.0-alpha)*rb + alpha*rf);   // background + forground
-                unsigned char go = (char)((1.0-alpha)*gb + alpha*gf);   // background + forground
-                unsigned char bo = (char)((1.0-alpha)*bb + alpha*bf);   // background + forground
-
-                frame->pixels[i] = (unsigned int)((ro << 16) + (go<< 8) + bo);
-        }
 }
 
 void ikigui_open_plugin_window(ikigui_screen *mywin,void *ptr,int w, int h){
