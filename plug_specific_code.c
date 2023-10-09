@@ -26,7 +26,6 @@ void prepare_graphics(plug_instance *plug,void *ptr){	// The daw calls this when
 //********************
 //   Plugin settings
 //********************
-VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG
 char brand_name[]   = "DSC";    // Place your brand name inside ""
 char product_name[] = "THELAY";	// Place your plug name inside ""
 #define VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG 1  // Version number for this plug is set to 1. Increase number for your plug when you make improvements.
