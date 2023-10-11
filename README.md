@@ -37,7 +37,7 @@ For displaying graphics it uses character maps and bitmap graphics, an old conce
 
 Character maps is a very powerful concept, that gives very little code, for doing wonderous stuff. It can be used for animations, text and other stuff very easily and fits the needs for graphics in audio plugins very well.
 
-The core concept here is simplicity, and less is more. There is not much to learn, and it givs fewer compatibility issues.
+The core concept here is simplicity, and less is more. There is not much to learn, and it gives fewer compatibility issues.
 
 ## Tutorials
 A tutorial on how to use and change this example will luckely be provided later on. This is only a showcase at the moment, even if it's fully working code.
