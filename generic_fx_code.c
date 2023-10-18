@@ -108,9 +108,9 @@ typedef struct{
     int down_y ;
     int old;
     int knob_selected;
-    ikigui_screen mywin ;
+    ikigui_window mywin ;
     // uniqe variables for this plug - move these to the other file plug_specific_code.c ?
-    ikigui knober;
+    ikigui_map knober;
     float delaybuffer[2][100000];
     int delaytap;
     float filt_buff[2][16];
@@ -206,7 +206,7 @@ float plugGetParameter(plugHeader *vstPlugin, int32_t index){ plug_instance *plu
 void* main(hostCallback HostCallback){ // New plug instances is created here. After plug load-in, it's the only known function for the host to run, that will give addresses for more functions for the host to run.
     struct plugHeader myplugin = {                              // Declaration of the struct that a plugin must return to the host.
         .magicNumber =                                          1450406992, // Identifier that it's an audio plug
-        .plugInstuctionDecoderFunc =                            plugInstructionDecoder,  // A callback adress for Host to send opcodes to plug
+        .plugInstuctionDecoderFunc =                            plugInstructionDecoder,  // A callback address for Host to send opcodes to plug
         .plugSetParameterFunc =                                 plugSetParameter, // Set new value of automatable parameter.
         .plugGetParameterFunc =                                 plugGetParameter, // Returns current value of automatable parameter.
         .number_of_programs =                                   NUMBER_OF_PRESETS, // presets

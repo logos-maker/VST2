@@ -9,17 +9,17 @@
 #include "gfx/bg.h"	// Embedded graphics for background in 32bit AARRGGBB BMP format.
 
 // Structs to hold graphic art, uniqe to this plug (one for each picture to be included). .
-ikigui_frame knob_anim;	// Raw global source graphics holder for knobs
-ikigui_frame bg;	// Raw global source graphics holder for background
+ikigui_image knob_anim;	// Raw global source graphics holder for knobs
+ikigui_image bg;	// Raw global source graphics holder for background
 
-void draw_graphics(plug_instance *plug){ 	   // The daw calls this when it wants to redraw the editor  
-	ikigui_blit(&plug->mywin.frame,&bg, 0, 0); // Draw gackground.
-	ikigui_draw(&plug->knober,0,10,10);	   // Draw knobs.
+void draw_graphics(plug_instance *plug){ 	   		// The daw calls this when it wants to redraw the editor  
+	ikigui_image_draw(&plug->mywin.frame,&bg, 0, 0); 	// Draw gackground.
+	ikigui_map_draw(&plug->knober,0,10,10);	   		// Draw knobs.
 }
 void prepare_graphics(plug_instance *plug,void *ptr){	// The daw calls this when it wants to open the editor window.
 	ikigui_bmp_include(&knob_anim,knob_array);				// Load knob graphics.
 	ikigui_bmp_include(&bg,bg_array);					// Load background graphics.
-	ikigui_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
+	ikigui_map_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
 	ikigui_open_plugin_window(&plug->mywin,ptr,350,90);			// Open the editor window in host.
 }
 

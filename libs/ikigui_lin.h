@@ -16,7 +16,7 @@ typedef struct {
 	unsigned int *pixels;
         unsigned int size;
         unsigned int bg_color; // for filling background
-} ikigui_frame; 
+} ikigui_image; 
 
 enum { MOUSE_LEFT = 0b1, MOUSE_MIDDLE = 0b10, MOUSE_RIGHT = 0b100, MOUSE_X1 = 0b1000, MOUSE_X2 = 0b10000 };
 
@@ -44,8 +44,8 @@ typedef struct {
         // To have pixels
 	XImage* image;
 	Pixmap bitmap;
-        ikigui_frame frame;
-} ikigui_screen;                     
+        ikigui_image frame;
+} ikigui_window;                     
 
 int old_x;
 int old_y;
@@ -65,14 +65,14 @@ unsigned int alpha_channel(unsigned int color,unsigned int temp){ // done with f
 	return (unsigned int)((ro << 16) + (go<< 8) + bo); 
 }
 
-void ikigui_fill_bg(ikigui_frame *frame,unsigned int color){// A background color for automatic filling of transparent pixels.
+void ikigui_fill_bg(ikigui_image *frame,unsigned int color){// A background color for automatic filling of transparent pixels.
 	// to precalc graphics for usage with ikigui_blit_part_fast() for faster graphics. Can be convinient in some cases.
         for(int i = 0 ; i < frame->size ; i++){
                 frame->pixels[i] = alpha_channel(color,frame->pixels[i]);
         }
 }
 
-void ikigui_bmp_include(ikigui_frame *frame,const unsigned char* bmp_incl){
+void ikigui_bmp_include(ikigui_image *frame,const unsigned char* bmp_incl){
         unsigned int start;
         frame->w = bmp_incl[0x12] + (bmp_incl[0x12+1]<<8) + (bmp_incl[0x12+2]<<16) + (bmp_incl[0x12+3]<<24);
         frame->h = bmp_incl[0x16] + (bmp_incl[0x16+1]<<8) + (bmp_incl[0x16+2]<<16) + (bmp_incl[0x16+3]<<24);
@@ -90,7 +90,7 @@ void ikigui_bmp_include(ikigui_frame *frame,const unsigned char* bmp_incl){
         frame->size = frame->w * frame->h ;
 }
 
-void ikigui_blit_part(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, ikigui_rect *part){ // Draw area
+void ikigui_blit_alpha(ikigui_image *mywin,ikigui_image *frame, int x, int y, ikigui_rect *part){ // Draw area
         if((x<0) || (y<0))return; // sheilding crash
         if(mywin->w <= (x+part->w))return; // shelding crash
         if(mywin->h <= (y+part->h))return; // shelding crash
@@ -101,7 +101,7 @@ void ikigui_blit_part(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, iki
         }
 }
 
-void ikigui_blit_part_filled(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, ikigui_rect *part){ // Draw area
+void ikigui_blit_filled(ikigui_image *mywin,ikigui_image *frame, int x, int y, ikigui_rect *part){ // Draw area
         if((x<0) || (y<0))return; // sheilding crash
         if(mywin->w <= (x+part->w))return; // shielding crash
         if(mywin->h <= (y+part->h))return; // shielding crash
@@ -113,7 +113,7 @@ void ikigui_blit_part_filled(ikigui_frame *mywin,ikigui_frame *frame, int x, int
         }
 }
 
-void ikigui_blit_part_fast(ikigui_frame *mywin,ikigui_frame *frame, int x, int y, ikigui_rect *part){ // Draw area
+void ikigui_blit_fast(ikigui_image *mywin,ikigui_image *frame, int x, int y, ikigui_rect *part){ // Draw area
         if((x<0) || (y<0))return; // sheilding crash
         if(mywin->w <= (x+part->w))return; // shelding crash
         if(mywin->h <= (y+part->h))return; // shelding crash
@@ -124,7 +124,7 @@ void ikigui_blit_part_fast(ikigui_frame *mywin,ikigui_frame *frame, int x, int y
         }
 }
 
-void ikigui_blit(ikigui_frame *mywin,ikigui_frame *frame, int x, int y){ // Draw area. Flexible to Blit in windows and pixel buffers. Can be optimized greatly.
+void ikigui_image_draw(ikigui_image *mywin,ikigui_image *frame, int x, int y){ // Draw area. Flexible to Blit in windows and pixel buffers. Can be optimized greatly.
         for(int j = 0 ; j < frame->h ; j++){ // vertical
                 for(int i = 0 ; i < frame->w ; i++){   // horizontal         
                         mywin->pixels[x+i+(j+y)*mywin->w] = frame->pixels[i+frame->w*j];
@@ -132,7 +132,7 @@ void ikigui_blit(ikigui_frame *mywin,ikigui_frame *frame, int x, int y){ // Draw
         }
 }
 
-void ikigui_open_plugin_window(ikigui_screen *mywin,void *ptr,int w, int h){
+void ikigui_open_plugin_window(ikigui_window *mywin,void *ptr,int w, int h){
         mywin->frame.w = w;
         mywin->frame.h = h;
 	mywin->dis=XOpenDisplay((char *)0);     // Get the display
@@ -166,16 +166,16 @@ void ikigui_open_plugin_window(ikigui_screen *mywin,void *ptr,int w, int h){
         XFlush(mywin->dis);
 }
 
-void ikigui_close_window(ikigui_screen *mywin){
+void ikigui_close_window(ikigui_window *mywin){
 	XDestroyWindow(mywin->dis,mywin->win);
 	XCloseDisplay(mywin->dis);				
 };
 
-void ikigui_update_window(ikigui_screen *mywin){
+void ikigui_update_window(ikigui_window *mywin){
         XPutImage(mywin->dis, mywin->win, mywin->gc, mywin->image, 0, 0, 0, 0, mywin->frame.w, mywin->frame.h);
 };
 
-void ikigui_get_events(ikigui_screen *mywin){ 
+void ikigui_get_events(ikigui_window *mywin){ 
         while( XPending(mywin->dis) > 0 ){ // no of events in que
                 XNextEvent(mywin->dis, &mywin->event); // Get next event
 
