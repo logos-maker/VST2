@@ -27,7 +27,9 @@ For the graphics part, it makes use of a RAW display buffer for graphics. And I 
 
 ## Ikigui - The graphics library used
 A new cross platform audio plugin GUI library for tiled graphics and animations. That uses almost no code at all, and is very easy to use.
-The name is a wordplay with the Japanese words 'iki' and 'ikigai', combined with GUI (Graphical User Interface).  
+The name is a wordplay with the Japanese words 'iki' and 'ikigai', combined with GUI (Graphical User Interface).
+
+You can find out more about it [here](https://github.com/logos-maker/ikiGUI)
 
 For displaying graphics it uses character maps and bitmap graphics, an old concept widely used in the 80's and in 2D computer games. But in this case you can place them anywhere in the editor window.
 Character maps is a very powerful concept, that gives very little code, for doing wonderous stuff. It can be used for animations, text and other stuff very easily and fits the needs for graphics in audio plugins very well.
