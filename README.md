@@ -61,6 +61,6 @@ MinGW-w64 can be used to compile the code on Windows. I would recommend download
 gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lGDI32
 ```
 ...to make it generate the plugin .dll for you. There is also many other ways to install MinGW-w64 for making 64bit plugs. If you want a cross platform IDE for developing you can mabe try out [CodeLite](https://codelite.org/) or [Code::Blocks](https://www.codeblocks.org/) or [EclipseIDE](https://eclipseide.org/)
-or use a simple editor that can run commands as you don't need any build scripts to compile this. Examples of text editors that can run the single command needed for compilation is for example (Geany)[https://www.geany.org/] or [Sublime Text](https://www.sublimetext.com/).
+or use a simple editor that can run commands as you don't need any build scripts to compile this. Examples of text editors that can run the single command needed for compilation is for example [Geany](https://www.geany.org/) or [Sublime Text](https://www.sublimetext.com/).
 ## Licences
 The code will soon be dual-licensed for a small fee for closed source projects. More info later.
