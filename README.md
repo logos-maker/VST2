@@ -50,7 +50,11 @@ x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
 ```
 ...for a 64-bit Windows plugin.
 ## MinGW for compilation on Windows
-MinGW can be used to compile the code on Windows.
+MinGW can be used to compile the code on Windows. I would recommend downloading [TDM-GCC](https://jmeubank.github.io/tdm-gcc/articles/2021-05/10.3.0-release) and downloading the installer named tdm64-gcc-10.3.0-2.exe Then after that you should be able to compile from the CMD command prompt. You can compile with the example with a command like...
+```
+gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lGDI32
+```
+...to make it generate the plugin .dll for you. There is also many other ways to install MinGW-w64 for making 64bit plugs. If you want a cross platform IDE for developing you can mabe try out [CodeLite]https://codelite.org/ or [Code::Blocks](https://www.codeblocks.org/) or [EclipseIDE](https://eclipseide.org/)
 
 ## Licences
 The code will soon be dual-licensed for a small fee for closed source projects. More info later.
