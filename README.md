@@ -6,11 +6,11 @@ The code crosscompiles with 100% identical code to Windows and Linux.
 
 This code was written on Linux and cross compiles to Windows, or can be compiled on Windows with MinGW. It subrogates the VST2 license by only using the VST2 ABI and makes it possible to make VST2 plugs without any third party licences. This makes it possible for anyone to make VST2 ABI compatible audio plugins, that will be fully useful in numerous music programs on Windows and Linux.
 
-This present a strait forward way, to make a new plug even for beginners and gain deep knowleage in the plugin format. With almost everything needed for a new plug in one small and simple well documented file, with about 90 lines of code. Perfect for future tutorials.
+This present a strait forward way, to make a new plug even for beginners and gain deep knowleage in the plugin format. With almost everything needed for a new plug in one small and simple well documented file, with about 80 lines of code. Perfect for future tutorials.
 The code is written entirely in C code, a language that is commonly used for audio applications for hardware, and it's a much simpler language than C++ to learn.
 
 ## Making your own plug
-I would check out the plug_specific_code.c file. There you will find everything to make your own plug, by tweeking that file. There you will find about 90 lines of custom code for a delay plug. Compile the project, and then make changes in that file and check out the changes in a music program.
+I would check out the plug_specific_code.c file. There you will find everything to make your own plug, by tweeking that file. There you will find about 80 lines of custom code for a delay plug. Compile the project, and then make changes in that file and check out the changes in a music program.
 
 ## Subrogating the VST2 licence - Making VST2 development availabe for anyone
 To make this available and useful for anyone, this code-base only makes use of parts of the VST2 ABI.
