@@ -94,7 +94,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
         break;
 	case plugEditGetRect: plug->myrect.bottom = PLUG_HEIGHT; plug->myrect.right = PLUG_WIDTH; *(struct ERect**)ptr = &plug->myrect ; return true;	// Host asks about the editor size.
 	case plugGetPlugCategory:	return TYPE_OF_PLUG; // Return 1 if the plug is an effect, or 2 if it's a synthesizer.
-        case plugEditClose:             						return true;   // Close plug edit window, not the plug instance.
+        case plugEditClose:             destroy_graphics(plug,ptr);			return true;   // Close plug edit window, not the plug instance.
         case plugGetProductString:      strcpy((char*)ptr, product_name);		return true;   // The name of the plug
         case plugGetVendorString:       strcpy((char*)ptr, brand_name);			return true;   // request for the vendor string (usually used in the UI for plugin grouping)
         case plugSetSampleRate:         samplerate = opt;				return true;   // Host tells plug the samplerate
