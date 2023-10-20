@@ -7,7 +7,8 @@
 // The graphic art (in BMP format) is converted to array declarations, in the following files...
 #include "gfx/knob.h"	// Embedded graphics for knobs in 32bit AARRGGBB BMP format.
 #include "gfx/bg.h"	// Embedded graphics for background in 32bit AARRGGBB BMP format.
-
+#define PLUG_WIDTH 350 //45
+#define PLUG_HEIGHT 90
 // Structs to hold graphic art, uniqe to this plug (one for each picture to be included). .
 ikigui_image knob_anim;	// Raw global source graphics holder for knobs
 ikigui_image bg;	// Raw global source graphics holder for background
@@ -20,7 +21,7 @@ void prepare_graphics(plug_instance *plug,void *ptr){	// The daw calls this when
 	ikigui_bmp_include(&knob_anim,knob_array);				// Load knob graphics.
 	ikigui_bmp_include(&bg,bg_array);					// Load background graphics.
 	ikigui_map_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
-	ikigui_open_plugin_window(&plug->mywin,ptr,350,90);			// Open the editor window in host.
+	ikigui_open_plugin_window(&plug->mywin,ptr,PLUG_WIDTH,PLUG_HEIGHT);			// Open the editor window in host.
 }
 
 //********************
@@ -32,6 +33,7 @@ char product_name[] = "THELAY";	// Place your plug name inside ""
 #define NUMBER_OF_PARAMETERS 5                  // Number of parameters in plug. Change that to the number of parameters you need, but don't excede 128.
 #define NUMBER_OF_PRESETS 3			// Number of presets inside the plug.
 #define TYPE_OF_PLUG EFFECT_UNIT // Set this to EFFECT_UNIT or SYNTHESIZER
+
 struct preset presets[NUMBER_OF_PRESETS] = {	// the preset presets inside the plug. Change NUMBER_OF_PRESETS if changing the number of presets.
 	{"SHORT",  0.1,0.9,0.1,0.2,0.3},// First preset
 	{"LONG",   0.7,0.7,0.7,0.1,0.2},// Second preset

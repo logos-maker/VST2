@@ -9,12 +9,7 @@
 
 #include "libs/ikigui.h"	// cross platform audio plugin GUI library for tiled graphics and animations.
 #include "libs/rst.h"		// definitions for making VST2 audio plugins compatible with the ABI.
-struct ERect myrect = {
-    .top = 0,	 // Set to 0, anything else is futile.
-    .left = 0,	 // Set to 0, anything else is futile.
-    .bottom = 90,// Editor width, change this if your plug need another size.
-    .right = 345,// Editor hight, change this if your plug need another size.
-};
+
 #define MAX_NUMBER_OF_PARAMETERS 128 // Increase this value if your plug needs more parameters than the maximum 128
 struct patch{ // all data to save and restore by host when saving and loading audio projects.
     float knob[MAX_NUMBER_OF_PARAMETERS];
@@ -24,6 +19,7 @@ typedef struct{
     struct plugHeader plughead; // It must be first in the struct. Note that each instance has this header.
     plugPtr (*hostcall) (plugHeader* effect, int32_t opcode, int32_t index, plugPtr value, void* ptr, float opt); // VstIntPtr (*audioMasterCallback) i dokumentation
     struct patch pth; // all data to save and restore by host be the op-codes plugGetChunk and plugSetChunk functions.
+    struct ERect myrect;
     int program_no; // the current preset number (not used in this plug).
     int pressed ;
     int down_x ;
@@ -58,7 +54,6 @@ void setknob(plug_instance* plug,int knob,float value){
 plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t index, plugPtr value, void *ptr, float opt){ // Pointer to this function is used in the myplugin header
     plug_instance *plug = (plug_instance*)vstPlugin->object;
     switch(opCode){
-	case plugEditGetRect:     *(struct ERect**)ptr = &myrect ;   return true; break; // If host asks about the size of the editor size. Needed if you going to have an editor.
         case plugEditRedraw:                    
                 ikigui_get_events(&plug->mywin); // update window events
                 if((plug->old == 0) & (plug->mywin.mouse.buttons & MOUSE_LEFT)){ // Mouse down event
@@ -97,6 +92,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
             return  1;//true;
         }
         break;
+	case plugEditGetRect: plug->myrect.bottom = PLUG_HEIGHT; plug->myrect.right = PLUG_WIDTH; *(struct ERect**)ptr = &plug->myrect ; return true;	// Host asks about the editor size.
 	case plugGetPlugCategory:	return TYPE_OF_PLUG; // Return 1 if the plug is an effect, or 2 if it's a synthesizer.
         case plugEditClose:             						return true;   // Close plug edit window, not the plug instance.
         case plugGetProductString:      strcpy((char*)ptr, product_name);		return true;   // The name of the plug
