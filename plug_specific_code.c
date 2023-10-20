@@ -7,7 +7,7 @@
 // The graphic art (in BMP format) is converted to array declarations, in the following files...
 #include "gfx/knob.h"	// Embedded graphics for knobs in 32bit AARRGGBB BMP format.
 #include "gfx/bg.h"	// Embedded graphics for background in 32bit AARRGGBB BMP format.
-#define PLUG_WIDTH 350 //45
+#define PLUG_WIDTH 350
 #define PLUG_HEIGHT 90
 
 // Structs to hold graphic art, uniqe to this plug (one for each picture to be included). .
