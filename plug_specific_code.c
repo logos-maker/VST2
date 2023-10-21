@@ -4,26 +4,25 @@
 //     Plugin GUI
 //*********************
 
-// The graphic art (in BMP format) is converted to array declarations, in the following files...
+// The graphic art (a normal BMP file converted to array declarations), is in the following files...
 #include "gfx/knob.h"	// Embedded graphics for knobs in 32bit AARRGGBB BMP format.
 #include "gfx/bg.h"	// Embedded graphics for background in 32bit AARRGGBB BMP format.
 #define PLUG_WIDTH 350
 #define PLUG_HEIGHT 90
 
-// Structs to hold graphic art, uniqe to this plug (one for each picture to be included). .
-ikigui_image knob_anim;	// Raw global source graphics holder for knobs
-ikigui_image bg;	// Raw global source graphics holder for background
+ikigui_image knob_anim;	// Global graphics for knobs.
+ikigui_image bg;	// Global graphics for background art.
 
-void draw_graphics(plug_instance *plug){ 	   		// The daw calls this when it wants to redraw the editor  
+void draw_graphics(plug_instance *plug){ 	   		// The DAW calls this when it wants to redraw the editor...
 	ikigui_image_draw(&plug->dat.mywin.frame,&bg, 0, 0); 	// Draw gackground.
 	ikigui_map_draw(&plug->dat.knob_map,0,10,10);		// Draw knobs.
 }
-void prepare_graphics(plug_instance *plug,void *ptr){	// The daw calls this when it wants to open the editor window.
+void prepare_graphics(plug_instance *plug,void *ptr){	// The DAW calls this when it wants to open the editor window...
 	ikigui_bmp_include(&knob_anim,knob_array);						// Load knob graphics.
 	ikigui_bmp_include(&bg,bg_array);							// Load background graphics.
 	ikigui_map_init(&plug->dat.knob_map, &plug->dat.mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
 }
-void destroy_graphics(plug_instance *plug,void *ptr){
+void destroy_graphics(plug_instance *plug,void *ptr){ // When the DAW closes the window...
 
 }
 
@@ -67,7 +66,7 @@ void plugProcessSamplesFloat32(plugHeader *vstPlugin, float **inputs, float **ou
         float cutoff = (plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]); // log4 knob value
         for(int j = 0; j < sampleFrames; j++){ // Loop trough all the samples in buffer. Put your audio algorithm inside here....
 		float filt_in, filt_out;
-		for(char i = 0; i < 2 ; i++){ // stereo handling
+		for(char i = 0; i < 2 ; i++){ // Stereo handling
 		        filt_in = inputs[i] [j] * (plug->pth.knob[PAR_OVERDR]*4); // AMP
 			if(filt_in>1)filt_in=1;else if(filt_in<-1)filt_in=-1; // CLAMP
 		        for(int k = 0 ; k < 5 ; k++){	plug->dat.filt_buff[i][k+1] = ((filt_in - plug->dat.filt_buff[i][k]) * cutoff) + plug->dat.filt_buff[i][k]; } // LOWPASS FILTER
