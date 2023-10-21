@@ -1,5 +1,4 @@
 // This is an example of an audio effect unit, using the VST2.4 plugin ABI (ABI Application Binary Interface).
-// Note thas this example is not compatible with the VST2.4 API (Application Programming Interface).
 
 #include <stdint.h> // For new names for variable declarations.
 #include <stdbool.h>// For using true and false keywords.
@@ -15,6 +14,7 @@
 struct patch{ // all data to save and restore by host when saving and loading audio projects.
     float knob[NUMBER_OF_PARAMETERS];
 };
+
 struct data{     // uniqe variables for this plug
     // For audio algorithm
     float delaybuffer[2][100000]; // stereo buffer for delay
@@ -23,7 +23,7 @@ struct data{     // uniqe variables for this plug
     // For graphics
     ikigui_map knob_map; // A tilemap declaration
     ikigui_window mywin; // A plugin window declaration
-};
+} data;
 
 typedef struct{ // general declarations
     struct plugHeader plughead; // It must be first in the struct. Note that each instance has this header.
@@ -63,7 +63,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                 ikigui_get_events(&plug->dat.mywin); // update window events
                 if((plug->old_button_press == 0) & (plug->dat.mywin.mouse.buttons & MOUSE_LEFT)){ // Mouse down event
                         plug->knob_selected = ikigui_mouse_pos(&plug->dat.knob_map, plug->dat.mywin.mouse.x -16, plug->dat.mywin.mouse.y-16);
-                        if(-1 != plug->knob_selected){
+                        if(-1 != plug->knob_selected){ // if mouse ponter was over a tile
                                 plug->pressed = 1;
                                 plug->hostcall(&plug->plughead, 43, plug->knob_selected, 0, 0, 0); // Tell host we grabed the knob 
                         }
@@ -76,24 +76,25 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                         
                         plug->hostcall(&plug->plughead, 0,   plug->knob_selected, 0, 0, plug->pth.knob[plug->knob_selected]); //audioMasterAutomate has op-code 0
                 }
+
                 // values for recognicing changes in mousemovements and mouse buttons.
-                plug->old_button_press = plug->dat.mywin.mouse.buttons;  // old value for buttons.
+                plug->old_button_press = plug->dat.mywin.mouse.buttons;  // old value for buttons. For finding changes later on.
                 plug->down_x = plug->dat.mywin.mouse.x ;     // old value for x coordinate.
                 plug->down_y = plug->dat.mywin.mouse.y ;     // old value for y coodrinate.
                 if(plug->pressed && (plug->dat.mywin.mouse.buttons == 0)){ // Release of mouse button
                         plug->pressed = 0;
                         plug->hostcall(&plug->plughead, 44,   plug->knob_selected, 0, 0, 0); // Tell host we ungrabed the knob // audioMasterEndEdit has op-code 44
                 }
-                for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++ ){
+                for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++ ){ // Update the tile map, with all knob values.
                         plug->dat.knob_map.map[i] = (char)(plug->pth.knob[i] * 64) +31; // Select animation frame for knob value.
                 }
 		
-		draw_graphics(plug);
+		draw_graphics(plug); // Draw all graphics, handled by plug_specific_code.c
 
-                ikigui_update_window(&plug->dat.mywin);
+                ikigui_update_window(&plug->dat.mywin); // Update all graphics in the plugin editor
         break;
         case plugEditOpen:{
-	    prepare_graphics(plug,ptr);
+	    prepare_graphics(plug,ptr); // Allocate everything needed for the new editor window.
 	    ikigui_open_plugin_window(&plug->dat.mywin,ptr,PLUG_WIDTH,PLUG_HEIGHT);	// Open the editor window in host.
             return  1;//true;
         }

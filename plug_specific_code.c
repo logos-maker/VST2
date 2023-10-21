@@ -1,4 +1,4 @@
-// In this C file, you make the changes specific to your plug
+
 
 //*********************
 //     Plugin GUI
@@ -60,7 +60,7 @@ void getParameterText(plug_instance *plug,int32_t index,char* ptr){ if(NULL!=gcv
 //*********************
 
 // Function is called by the host to make your plug process the audio buffer. Here the 'audio in' gets processed and sent to audio out. Audio levels is between -1 to +1
-// plugin specific variables used inside this function, is placed inside the plug_instance struct in generic_fx_code.c starting at line 18.
+// plugin specific variables used inside this function, is placed inside the plug_instance struct in generic_fx_code.c starting at line 19.
 void plugProcessSamplesFloat32(plugHeader *vstPlugin, float **inputs, float **outputs, int32_t sampleFrames){ plug_instance *plug = (plug_instance*)vstPlugin->object;
 	enum { PAR_DELAY,PAR_OVERDR,PAR_CUTOFF,PAR_FEEDBK,PAR_DRY}; // Create enumeration on words from 0 to 4 to get the right parameters.
         float cutoff = (plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]); // log4 knob value
