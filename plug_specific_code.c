@@ -1,8 +1,8 @@
 // In this C file, you make the changes specific to your plug
 
-//********************
+//*********************
 //     Plugin GUI
-//********************
+//*********************
 
 // The graphic art (in BMP format) is converted to array declarations, in the following files...
 #include "gfx/knob.h"	// Embedded graphics for knobs in 32bit AARRGGBB BMP format.
@@ -16,25 +16,24 @@ ikigui_image bg;	// Raw global source graphics holder for background
 
 void draw_graphics(plug_instance *plug){ 	   		// The daw calls this when it wants to redraw the editor  
 	ikigui_image_draw(&plug->mywin.frame,&bg, 0, 0); 	// Draw gackground.
-	ikigui_map_draw(&plug->knober,0,10,10);	   		// Draw knobs.
+	ikigui_map_draw(&plug->dat.knob_map,0,10,10);		// Draw knobs.
 }
 void prepare_graphics(plug_instance *plug,void *ptr){	// The daw calls this when it wants to open the editor window.
 	ikigui_bmp_include(&knob_anim,knob_array);					// Load knob graphics.
 	ikigui_bmp_include(&bg,bg_array);						// Load background graphics.
-	ikigui_map_init(&plug->knober, &plug->mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
+	ikigui_map_init(&plug->dat.knob_map, &plug->mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
 	ikigui_open_plugin_window(&plug->mywin,ptr,PLUG_WIDTH,PLUG_HEIGHT);		// Open the editor window in host.
 }
 void destroy_graphics(plug_instance *plug,void *ptr){
 
 }
 
-//********************
+//*********************
 //   Plugin settings
-//********************
+//*********************
 char brand_name[]   = "DSC";    // Place your brand name inside ""
 char product_name[] = "THELAY";	// Place your plug name inside ""
 #define VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG 1  // Version number for this plug is set to 1. Increase number for your plug when you make improvements.
-#define NUMBER_OF_PARAMETERS 5                  // Number of parameters in plug. Change that to the number of parameters you need, but don't excede 128.
 #define NUMBER_OF_PRESETS 3			// Number of presets inside the plug.
 #define TYPE_OF_PLUG EFFECT_UNIT // Set this to EFFECT_UNIT or SYNTHESIZER
 
@@ -53,27 +52,28 @@ void getParameterName(int32_t index,  char* ptr){ // Names of all user parameter
                 default: strcpy(ptr, "???");		break; // A default name, reminding to add create any missing case for some parameter.
         }
 };
-void getParameterText(plug_instance *plug,int32_t index,char* ptr){ if(NULL!=gcvt(plug->pth.knob[index], 6, ptr)) return; }; // Host whant the plug indexed parameter value in text. if(NULL is for not giving compilation warnings.
+void getParameterText(plug_instance *plug,int32_t index,char* ptr){ if(NULL!=gcvt(plug->pth.knob[index], 6, ptr)) return; }; // Host whant the plug indexed parameter value in text. if(NULL is for not giving compilation warnings).
 
-//********************
+
+//*********************
 //  Plugin algothithm
-//********************
+//*********************
 
 // Function is called by the host to make your plug process the audio buffer. Here the 'audio in' gets processed and sent to audio out. Audio levels is between -1 to +1
-// plugin specific variables used inside this function, is placed inside the plug_instance struct in generic_fx_code.c starting at line 113.
+// plugin specific variables used inside this function, is placed inside the plug_instance struct in generic_fx_code.c starting at line 30.
 void plugProcessSamplesFloat32(plugHeader *vstPlugin, float **inputs, float **outputs, int32_t sampleFrames){ plug_instance *plug = (plug_instance*)vstPlugin->object;
 	enum { PAR_DELAY,PAR_OVERDR,PAR_CUTOFF,PAR_FEEDBK,PAR_DRY}; // Create enumeration on words from 0 to 4 to get the right parameters.
         float cutoff = (plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]); // log4 knob value
         for(int j = 0; j < sampleFrames; j++){ // Loop trough all the samples in buffer. Put your audio algorithm inside here....
 		float filt_in, filt_out;
-		for(char i = 0; i < 2 ; i++){
-		        filt_in = inputs[i] [j] * (plug->pth.knob[PAR_OVERDR]*4);
+		for(char i = 0; i < 2 ; i++){ // stereo handling
+		        filt_in = inputs[i] [j] * (plug->pth.knob[PAR_OVERDR]*4); // AMP
 			if(filt_in>1)filt_in=1;else if(filt_in<-1)filt_in=-1; // CLAMP
-		        for(int k = 0 ; k < 5 ; k++){	plug->filt_buff[i][k+1] = ((filt_in - plug->filt_buff[i][k]) * cutoff) + plug->filt_buff[i][k]; }
-		        plug->filt_buff[i][0] = filt_out = plug->filt_buff[i][5];
-		        plug->delaybuffer[i] [plug->delaytap] = ( plug->delaybuffer[i] [plug->delaytap] * (plug->pth.knob[PAR_FEEDBK] ) ) +  ( filt_out * (1-plug->pth.knob[PAR_FEEDBK]) ) ;
-		        outputs[i][j]   = inputs[i][j]* (1-plug->pth.knob[PAR_DRY]) + plug->delaybuffer[i][plug->delaytap +1] * plug->pth.knob[PAR_DRY];
+		        for(int k = 0 ; k < 5 ; k++){	plug->dat.filt_buff[i][k+1] = ((filt_in - plug->dat.filt_buff[i][k]) * cutoff) + plug->dat.filt_buff[i][k]; } // LOWPASS FILTER
+		        plug->dat.filt_buff[i][0] = filt_out = plug->dat.filt_buff[i][5]; // FILTER FEEDBACK
+		        plug->dat.delaybuffer[i] [plug->dat.delaytap] = ( plug->dat.delaybuffer[i] [plug->dat.delaytap] * (plug->pth.knob[PAR_FEEDBK] ) ) +  ( filt_out * (1-plug->pth.knob[PAR_FEEDBK]) ) ;
+		        outputs[i][j]   = inputs[i][j]* (1-plug->pth.knob[PAR_DRY]) + plug->dat.delaybuffer[i][plug->dat.delaytap +1] * plug->pth.knob[PAR_DRY]; // OUTPUT STAGE
 		}
-		plug->delaytap++; if(plug->delaytap > (int)(plug->pth.knob[PAR_DELAY] *(50000-1))) plug->delaytap = 0;
+		plug->dat.delaytap++; if(plug->dat.delaytap > (int)(plug->pth.knob[PAR_DELAY] *(50000-1))) plug->dat.delaytap = 0; // Loop the delay tap
         }
 }

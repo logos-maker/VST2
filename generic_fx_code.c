@@ -10,33 +10,38 @@
 #include "libs/ikigui.h"	// cross platform audio plugin GUI library for tiled graphics and animations.
 #include "libs/rst.h"		// definitions for making VST2 audio plugins compatible with the ABI.
 
-#define MAX_NUMBER_OF_PARAMETERS 128 // Increase this value if your plug needs more parameters than the maximum 128
+#define NUMBER_OF_PARAMETERS 5  // Number of parameters in plug.
+
 struct patch{ // all data to save and restore by host when saving and loading audio projects.
-    float knob[MAX_NUMBER_OF_PARAMETERS];
+    float knob[NUMBER_OF_PARAMETERS];
+};
+struct data{     // uniqe variables for this plug
+    // For audio algorithm
+    float delaybuffer[2][100000]; // stereo buffer for delay
+    float filt_buff[2][16];	  // stereo huffer for filter
+    int delaytap;		  // the dalay tap for the delay
+    // For graphics
+    ikigui_map knob_map; // A tilemap declaration
+    ikigui_window mywin; // A plugin window declaration
 };
 
-typedef struct{
+typedef struct{ // general declarations
     struct plugHeader plughead; // It must be first in the struct. Note that each instance has this header.
     plugPtr (*hostcall) (plugHeader* effect, int32_t opcode, int32_t index, plugPtr value, void* ptr, float opt); // VstIntPtr (*audioMasterCallback) i dokumentation
     struct patch pth; // all data to save and restore by host be the op-codes plugGetChunk and plugSetChunk functions.
+    struct data dat; // buffers and variables for the audio algorithm.
     struct ERect myrect;
     int program_no; // the current preset number (not used in this plug).
     int pressed ;
     int down_x ;
     int down_y ;
-    int old;
+    int old_button_press; // What the mouse buttons was before
     int knob_selected;
-    ikigui_window mywin ;
-    // uniqe variables for this plug - move these to the other file plug_specific_code.c ?
-    ikigui_map knober;
-    float delaybuffer[2][100000];
-    int delaytap;
-    float filt_buff[2][16];
 } plug_instance;
 
 struct preset{ // struct used for internal presets in the plug
 	char preset_name[24];
-	float param[MAX_NUMBER_OF_PARAMETERS]; // Maybe not optimal but keeps it simple and understandable.
+	float param[NUMBER_OF_PARAMETERS]; // Maybe not optimal.
 };
 
 float samplerate; // not used, just here for the sake of the example.
@@ -47,7 +52,7 @@ void getProgramName(int32_t index,  char* ptr){	strcpy(ptr,presets[index].preset
 
 void setknob(plug_instance* plug,int knob,float value){
 	plug->pth.knob[knob] = value ;
-	plug->hostcall(&plug->plughead, 0,   knob, 0, 0, plug->pth.knob[knob]); //audioMasterAutomate has op-code 0
+	plug->hostcall(&plug->plughead, 0, knob, 0, 0, plug->pth.knob[knob]); //audioMasterAutomate has op-code 0
 }
 
 // Function is called by the host to make your plug do and answer different things.
@@ -56,8 +61,8 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
     switch(opCode){
         case plugEditRedraw:                    
                 ikigui_get_events(&plug->mywin); // update window events
-                if((plug->old == 0) & (plug->mywin.mouse.buttons & MOUSE_LEFT)){ // Mouse down event
-                        plug->knob_selected = ikigui_mouse_pos(&plug->knober, plug->mywin.mouse.x -16, plug->mywin.mouse.y-16);
+                if((plug->old_button_press == 0) & (plug->mywin.mouse.buttons & MOUSE_LEFT)){ // Mouse down event
+                        plug->knob_selected = ikigui_mouse_pos(&plug->dat.knob_map, plug->mywin.mouse.x -16, plug->mywin.mouse.y-16);
                         if(-1 != plug->knob_selected){
                                 plug->pressed = 1;
                                 plug->hostcall(&plug->plughead, 43, plug->knob_selected, 0, 0, 0); // Tell host we grabed the knob 
@@ -72,7 +77,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                         plug->hostcall(&plug->plughead, 0,   plug->knob_selected, 0, 0, plug->pth.knob[plug->knob_selected]); //audioMasterAutomate has op-code 0
                 }
                 // values for recognicing changes in mousemovements and mouse buttons.
-                plug->old = plug->mywin.mouse.buttons;  // old value for buttons.
+                plug->old_button_press = plug->mywin.mouse.buttons;  // old value for buttons.
                 plug->down_x = plug->mywin.mouse.x ;     // old value for x coordinate.
                 plug->down_y = plug->mywin.mouse.y ;     // old value for y coodrinate.
                 if(plug->pressed && (plug->mywin.mouse.buttons == 0)){ // Release of mouse button
@@ -80,7 +85,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                         plug->hostcall(&plug->plughead, 44,   plug->knob_selected, 0, 0, 0); // Tell host we ungrabed the knob // audioMasterEndEdit has op-code 44
                 }
                 for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++ ){
-                        plug->knober.map[i] = (char)(plug->pth.knob[i] * 64) +31; // Select animation frame for knob value.
+                        plug->dat.knob_map.map[i] = (char)(plug->pth.knob[i] * 64) +31; // Select animation frame for knob value.
                 }
 		
 		draw_graphics(plug);
@@ -135,8 +140,8 @@ void* main(hostCallback HostCallback){ // New plug instances is created here. Af
         .plugProcessDoubleFunc = NULL,                          // No such function in this plug. Use for funtionpointer to 64bit floating point handeling
     };
     plug_instance *plug =(plug_instance*)calloc(1,sizeof(plug_instance));       // Allocate memory to the plug instance. calloc sets all allocated memory to zero unlike malloc
-    memcpy(&(plug->plughead),&myplugin,sizeof(plugHeader));                     // Copy the above header over to the memory reserved with calloc. Destimation address is &(plug->plughead)
+    memcpy(&(plug->plughead),&myplugin,sizeof(plugHeader));                     // Copy the above header over to the memory reserved with calloc. Destination address is &(plug->plughead)
     plug->plughead.object = plug;                                               // To be able to find all internal parameters.
-    plug->hostcall = HostCallback;						// Store callback to host, that was/is given by the host when this function is called.
+    plug->hostcall = HostCallback;						// Store callback to host, so the plug can make calls to the host.
     return plug; // Same as... return &(plug->plughead); // Send address to the plugs plug-header to the host. It's the address to all data that is uniqe for the plug instance.
 }
