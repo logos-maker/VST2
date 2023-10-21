@@ -1,20 +1,15 @@
 // This is an example of an audio effect unit, using the VST2.4 plugin ABI (ABI Application Binary Interface).
 
-#include <stdint.h> // For new names for variable declarations.
-#include <stdbool.h>// For using true and false keywords.
-#include <stdio.h>  // For sprintf. Can maybe be replaced with something faster.
-#include <stdlib.h> // For malloc function. Can maybe be replaced with something faster or smaller?
-#include <string.h> // For memcopy?
+#include <stdint.h> // For variable declaration names.
+#include <stdbool.h>// For true and false keywords.
+#include <stdio.h>  // For sprintf.
+#include <stdlib.h> // For malloc function.
+#include <string.h> // For memcpy
 
 #include "libs/ikigui.h"	// cross platform audio plugin GUI library for tiled graphics and animations.
 #include "libs/rst.h"		// definitions for making VST2 audio plugins compatible with the ABI.
 
 #define NUMBER_OF_PARAMETERS 5  // Uniqe number of parameters in plug.
-
-struct patch{ // all data to save and restore by host when saving and loading audio projects.
-    float knob[NUMBER_OF_PARAMETERS];
-};
-
 struct data{     // uniqe variables for this plug
     // For audio algorithm
     float delaybuffer[2][100000]; // stereo buffer for delay
@@ -24,6 +19,10 @@ struct data{     // uniqe variables for this plug
     ikigui_map knob_map; // A tilemap declaration
     ikigui_window mywin; // A plugin window declaration
 } data;
+
+struct patch{ // the patch that the DAW will save and restore when saving and loading audio projects.
+    float knob[NUMBER_OF_PARAMETERS];
+};
 
 typedef struct{ // general declarations
     struct plugHeader plughead; // It must be first in the struct. Note that each instance has this header.
@@ -44,18 +43,18 @@ struct preset{ // general struct used for internal presets in the plug
 	float param[NUMBER_OF_PARAMETERS]; // Maybe not optimal.
 };
 
-float samplerate; // not used, just here for the sake of the example.
+float samplerate; // Is here only for demonstration purposes.
 
 #include "plug_specific_code.c"
 
-void getProgramName(int32_t index,  char* ptr){	strcpy(ptr,presets[index].preset_name); }; // Copy the preset name, and give to the host when asked for.
+void getProgramName(int32_t index,  char* ptr){	strcpy(ptr,presets[index].preset_name); }; // Copy the preset name and give to the host when asked for.
 
 void setknob(plug_instance* plug,int knob,float value){
 	plug->pth.knob[knob] = value ;
-	plug->hostcall(&plug->plughead, 0, knob, 0, 0, plug->pth.knob[knob]); //audioMasterAutomate has op-code 0
+	plug->hostcall(&plug->plughead, 0, knob, 0, 0, plug->pth.knob[knob]); // audioMasterAutomate has op-code 0
 }
 
-// Function is called by the host to make your plug do and answer different things.
+// Function is called by the host to make your plug do and answer different things that the DAW asks for.
 plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t index, plugPtr value, void *ptr, float opt){ // Pointer to this function is used in the myplugin header
     plug_instance *plug = (plug_instance*)vstPlugin->object;
     switch(opCode){
@@ -72,9 +71,9 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                         float temp = plug->pth.knob[plug->knob_selected] + (float)(plug->down_y - plug->dat.mywin.mouse.y) * 0.01; 
                         if(0 > temp)            plug->pth.knob[plug->knob_selected] = 0; // knob can't go below 0.
                         else if(1 < temp)       plug->pth.knob[plug->knob_selected] = 1; // knob can't go above 1.
-                        else                    plug->pth.knob[plug->knob_selected] = temp ; // New knob value.
+                        else                    plug->pth.knob[plug->knob_selected] = temp ; // the new knob value.
                         
-                        plug->hostcall(&plug->plughead, 0,   plug->knob_selected, 0, 0, plug->pth.knob[plug->knob_selected]); //audioMasterAutomate has op-code 0
+                        plug->hostcall(&plug->plughead, 0,   plug->knob_selected, 0, 0, plug->pth.knob[plug->knob_selected]); // send new knob value to the DAW.
                 }
 
                 // values for recognicing changes in mousemovements and mouse buttons.
@@ -83,7 +82,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                 plug->down_y = plug->dat.mywin.mouse.y ;     // old value for y coodrinate.
                 if(plug->pressed && (plug->dat.mywin.mouse.buttons == 0)){ // Release of mouse button
                         plug->pressed = 0;
-                        plug->hostcall(&plug->plughead, 44,   plug->knob_selected, 0, 0, 0); // Tell host we ungrabed the knob // audioMasterEndEdit has op-code 44
+                        plug->hostcall(&plug->plughead, 44,   plug->knob_selected, 0, 0, 0); // Tell the DAW that we released the knob.
                 }
                 for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++ ){ // Update the tile map, with all knob values.
                         plug->dat.knob_map.map[i] = (char)(plug->pth.knob[i] * 64) +31; // Select animation frame for knob value.
@@ -120,7 +119,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
         case plugSetChunk:		memcpy(&plug->pth, (unsigned char *)ptr, sizeof(struct patch)); return true; // Host loads an old saved state into plug.
         default: break; // ignoring all other opcodes //fprintf(fp, "index:%d value:%ld ptr:%p opt:%f instance:%d \n",index,value,ptr,opt,instances); // For printing op-codes not implemented.
     }
-    return 0; // Return not supported message number.
+    return 0; // Return that it's not a supported message number by this plug.
 }
 // These functions is given to the host in the main() function bellow. The host can't call these without the function pointer to them.
 void  plugSetParameter(plugHeader *vstPlugin, int32_t index, float parameter){ plug_instance *plug = (plug_instance*)vstPlugin->object; plug->pth.knob[index] = parameter ; }// Host uses this to set parameter in plug
