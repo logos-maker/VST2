@@ -1,5 +1,17 @@
 
-// Stuff thats belongs to the uniqe plug, that can be in this file is on lines 12 to 21 in generic_fx_code.c
+// Some declarations needed for the uniqe plug can be found in generic_fx_code.c on lines 12 to 21.
+
+
+//*********************
+//   Plugin settings
+//*********************
+
+char brand_name[]   = "DSC";    		// Place your brand name inside ""
+char product_name[] = "THELAY";			// Place your plug name inside ""
+#define VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG 1  // Version number for this plug is set to 1. Increase number for your plug when you make improvements.
+#define TYPE_OF_PLUG EFFECT_UNIT 		// Set this to EFFECT_UNIT or SYNTHESIZER
+
+
 
 //*********************
 //     Plugin GUI
@@ -28,15 +40,11 @@ void destroy_graphics(plug_instance *plug,void *ptr){ // When the DAW closes the
 }
 
 
-//*********************
-//   Plugin settings
-//*********************
 
-char brand_name[]   = "DSC";    // Place your brand name inside ""
-char product_name[] = "THELAY";	// Place your plug name inside ""
-#define VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG 1  // Version number for this plug is set to 1. Increase number for your plug when you make improvements.
-#define NUMBER_OF_PRESETS 3			// Number of presets inside the plug.
-#define TYPE_OF_PLUG EFFECT_UNIT // Set this to EFFECT_UNIT or SYNTHESIZER
+//*************************
+//     Plugin presets
+//*************************
+#define NUMBER_OF_PRESETS 3	// Number of presets inside the plug.
 
 struct preset presets[NUMBER_OF_PRESETS] = {	// the preset presets inside the plug. Change NUMBER_OF_PRESETS if changing the number of presets.
 	{"SHORT",  0.1,0.9,0.3,0.2,0.3},// First preset
@@ -53,11 +61,12 @@ void getParameterName(int32_t index,  char* ptr){ // Names of all user parameter
                 default: strcpy(ptr, "???");		break; // A default name, reminding to add create any missing case for some parameter.
         }
 };
-void getParameterText(plug_instance *plug,int32_t index,char* ptr){ if(NULL!=gcvt(plug->pth.knob[index], 6, ptr)) return; }; // Host whant the plug indexed parameter value in text. if(NULL is for not giving compilation warnings).
+void getParameterText(plug_instance *plug,int32_t index,char* ptr){ if(NULL!=gcvt(plug->pth.knob[index], 6, ptr)) return; }; // Host whant the indexed parameter value in text.
+
 
 
 //*********************
-//  Plugin algothithm
+//  Plugin algorithm
 //*********************
 
 // The DAW calls this function to make the plugin process audio in buffer and fill with audio out data. Audio levels is between -1 to +1
@@ -77,3 +86,5 @@ void plugProcessSamplesFloat32(plugHeader *vstPlugin, float **inputs, float **ou
 		plug->dat.delaytap++; if(plug->dat.delaytap > (int)(plug->pth.knob[PAR_DELAY] *(50000-1))) plug->dat.delaytap = 0; // Loop the delay tap
         }
 }
+
+
