@@ -4,12 +4,15 @@
 Use this as a template if you want a simple way to test out to make a VST plug and try it out.
 The code crosscompiles with 100% identical code to Windows and Linux.
 
+If you use it as a toolkit for making audio plugins, then it's the most simple audio plugin toolkit you will ever find.
+And i'ss many thusand times simpler than the popular toolkit for audio plugins.
+
 It subrogates the VST2 license by only using the VST2 ABI. Yes VST2 will be aliva and kicking forever. 
 This makes it possible to make plugins to use in the mayority of all music programs.
 
 This will make it possible to make a new plug even for beginners. And it you understand all of it you will have gain deep knowleage of this the plugin format.
 Almost everything you need for a new plug is in one small file with less than 70 lines of code.
-If you stip away the filled in code that is for the delay, than it's less than 50 lines of code.
+If you strip away all the filled in code that's for the delay, than it's less than 50 lines of code of the core of this toolkit.
 The code is written entirely in C code, a language that is the most commonly used for audio applications for hardware, 
 and it's a much simpler language than C++ to learn.
 
