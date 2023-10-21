@@ -9,7 +9,10 @@
 #include "libs/ikigui.h"	// cross platform audio plugin GUI library for tiled graphics and animations.
 #include "libs/rst.h"		// definitions for making VST2 audio plugins compatible with the ABI.
 
-#define NUMBER_OF_PARAMETERS 5  // Uniqe number of parameters in plug.
+//********************************
+//     Plugin data and buffers
+//********************************
+
 struct data{     // uniqe variables for this plug
     // For audio algorithm
     float delaybuffer[2][100000]; // stereo buffer for delay
@@ -19,6 +22,12 @@ struct data{     // uniqe variables for this plug
     ikigui_map knob_map; // A tilemap declaration
     ikigui_window mywin; // A plugin window declaration
 } data;
+
+#define NUMBER_OF_PARAMETERS 5  // Uniqe number of parameters in plug.
+
+//*******************************************************************
+// The rest in this file is generic stuff not specific to this plug 
+//*******************************************************************
 
 struct patch{ // the patch that the DAW will save and restore when saving and loading audio projects.
     float knob[NUMBER_OF_PARAMETERS];
