@@ -54,7 +54,7 @@ x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
 sudo apt -y install mingw-w64
 ```
 
-## GCC and MinGW for compilation on Windows
+## Compilation on Windows
 MinGW-w64 can be used to compile the code on Windows. I would recommend downloading [TDM-GCC](https://jmeubank.github.io/tdm-gcc/articles/2021-05/10.3.0-release) and downloading the installer named tdm64-gcc-10.3.0-2.exe Then after that you should be able to compile from the CMD command prompt. You can compile with the example with a command like...
 ```
 gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lGDI32
