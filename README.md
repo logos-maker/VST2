@@ -38,7 +38,7 @@ Is a cross platform GUI library for plugins. That uses almost no code at all.
 
 You can find out more about it [here](https://github.com/logos-maker/ikiGUI)
 
-The core concept in ikiGUI is simplicity, so it's much to learn, and will give fewer compatibility issues with you plugins.
+The core concept in ikiGUI is simplicity, so it's not much to learn, and will give fewer compatibility issues with you plugins.
 
 ## Compilation on Linux
 It can easily be done on a standard Linux machine with a command like...
