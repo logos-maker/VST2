@@ -15,22 +15,23 @@ ikigui_image knob_anim;	// Raw global source graphics holder for knobs
 ikigui_image bg;	// Raw global source graphics holder for background
 
 void draw_graphics(plug_instance *plug){ 	   		// The daw calls this when it wants to redraw the editor  
-	ikigui_image_draw(&plug->mywin.frame,&bg, 0, 0); 	// Draw gackground.
+	ikigui_image_draw(&plug->dat.mywin.frame,&bg, 0, 0); 	// Draw gackground.
 	ikigui_map_draw(&plug->dat.knob_map,0,10,10);		// Draw knobs.
 }
 void prepare_graphics(plug_instance *plug,void *ptr){	// The daw calls this when it wants to open the editor window.
-	ikigui_bmp_include(&knob_anim,knob_array);					// Load knob graphics.
-	ikigui_bmp_include(&bg,bg_array);						// Load background graphics.
-	ikigui_map_init(&plug->dat.knob_map, &plug->mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
-	ikigui_open_plugin_window(&plug->mywin,ptr,PLUG_WIDTH,PLUG_HEIGHT);		// Open the editor window in host.
+	ikigui_bmp_include(&knob_anim,knob_array);						// Load knob graphics.
+	ikigui_bmp_include(&bg,bg_array);							// Load background graphics.
+	ikigui_map_init(&plug->dat.knob_map, &plug->dat.mywin.frame,&knob_anim,5,1,64,56);	// Set columns and rows of knobs in the tile array, and tile width and hight.
 }
 void destroy_graphics(plug_instance *plug,void *ptr){
 
 }
 
+
 //*********************
 //   Plugin settings
 //*********************
+
 char brand_name[]   = "DSC";    // Place your brand name inside ""
 char product_name[] = "THELAY";	// Place your plug name inside ""
 #define VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG 1  // Version number for this plug is set to 1. Increase number for your plug when you make improvements.
@@ -60,7 +61,7 @@ void getParameterText(plug_instance *plug,int32_t index,char* ptr){ if(NULL!=gcv
 //*********************
 
 // Function is called by the host to make your plug process the audio buffer. Here the 'audio in' gets processed and sent to audio out. Audio levels is between -1 to +1
-// plugin specific variables used inside this function, is placed inside the plug_instance struct in generic_fx_code.c starting at line 30.
+// plugin specific variables used inside this function, is placed inside the plug_instance struct in generic_fx_code.c starting at line 18.
 void plugProcessSamplesFloat32(plugHeader *vstPlugin, float **inputs, float **outputs, int32_t sampleFrames){ plug_instance *plug = (plug_instance*)vstPlugin->object;
 	enum { PAR_DELAY,PAR_OVERDR,PAR_CUTOFF,PAR_FEEDBK,PAR_DRY}; // Create enumeration on words from 0 to 4 to get the right parameters.
         float cutoff = (plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]*plug->pth.knob[PAR_CUTOFF]); // log4 knob value

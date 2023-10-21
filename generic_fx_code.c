@@ -60,16 +60,16 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
     plug_instance *plug = (plug_instance*)vstPlugin->object;
     switch(opCode){
         case plugEditRedraw:                    
-                ikigui_get_events(&plug->mywin); // update window events
-                if((plug->old_button_press == 0) & (plug->mywin.mouse.buttons & MOUSE_LEFT)){ // Mouse down event
-                        plug->knob_selected = ikigui_mouse_pos(&plug->dat.knob_map, plug->mywin.mouse.x -16, plug->mywin.mouse.y-16);
+                ikigui_get_events(&plug->dat.mywin); // update window events
+                if((plug->old_button_press == 0) & (plug->dat.mywin.mouse.buttons & MOUSE_LEFT)){ // Mouse down event
+                        plug->knob_selected = ikigui_mouse_pos(&plug->dat.knob_map, plug->dat.mywin.mouse.x -16, plug->dat.mywin.mouse.y-16);
                         if(-1 != plug->knob_selected){
                                 plug->pressed = 1;
                                 plug->hostcall(&plug->plughead, 43, plug->knob_selected, 0, 0, 0); // Tell host we grabed the knob 
                         }
                 }
                 if(plug->pressed){ // Change pressed knob according to relative mouse movement.
-                        float temp = plug->pth.knob[plug->knob_selected] + (float)(plug->down_y - plug->mywin.mouse.y) * 0.01; 
+                        float temp = plug->pth.knob[plug->knob_selected] + (float)(plug->down_y - plug->dat.mywin.mouse.y) * 0.01; 
                         if(0 > temp)            plug->pth.knob[plug->knob_selected] = 0; // knob can't go below 0.
                         else if(1 < temp)       plug->pth.knob[plug->knob_selected] = 1; // knob can't go above 1.
                         else                    plug->pth.knob[plug->knob_selected] = temp ; // New knob value.
@@ -77,10 +77,10 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
                         plug->hostcall(&plug->plughead, 0,   plug->knob_selected, 0, 0, plug->pth.knob[plug->knob_selected]); //audioMasterAutomate has op-code 0
                 }
                 // values for recognicing changes in mousemovements and mouse buttons.
-                plug->old_button_press = plug->mywin.mouse.buttons;  // old value for buttons.
-                plug->down_x = plug->mywin.mouse.x ;     // old value for x coordinate.
-                plug->down_y = plug->mywin.mouse.y ;     // old value for y coodrinate.
-                if(plug->pressed && (plug->mywin.mouse.buttons == 0)){ // Release of mouse button
+                plug->old_button_press = plug->dat.mywin.mouse.buttons;  // old value for buttons.
+                plug->down_x = plug->dat.mywin.mouse.x ;     // old value for x coordinate.
+                plug->down_y = plug->dat.mywin.mouse.y ;     // old value for y coodrinate.
+                if(plug->pressed && (plug->dat.mywin.mouse.buttons == 0)){ // Release of mouse button
                         plug->pressed = 0;
                         plug->hostcall(&plug->plughead, 44,   plug->knob_selected, 0, 0, 0); // Tell host we ungrabed the knob // audioMasterEndEdit has op-code 44
                 }
@@ -90,10 +90,11 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
 		
 		draw_graphics(plug);
 
-                ikigui_update_window(&plug->mywin);
+                ikigui_update_window(&plug->dat.mywin);
         break;
         case plugEditOpen:{
 	    prepare_graphics(plug,ptr);
+	    ikigui_open_plugin_window(&plug->dat.mywin,ptr,PLUG_WIDTH,PLUG_HEIGHT);	// Open the editor window in host.
             return  1;//true;
         }
         break;
