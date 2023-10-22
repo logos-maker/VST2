@@ -1,7 +1,7 @@
 
 typedef int64_t plugPtr;
 typedef struct plugHeader plugHeader;
-struct plugHeader{ // A basic audio effect plugin using the ABI for VST2.4
+struct plugHeader{ // The ABI for audio effect plugins
 	int32_t magicNumber;
 	plugPtr (*plugInstuctionDecoderFunc)(plugHeader* effect, int32_t opcode, int32_t index, plugPtr value, void* ptr, float opt);
 	void(*deprecatedProcess)(void); // not used, is deprecated
@@ -35,7 +35,7 @@ enum plugPropertiesFlags{
 	hasDoubleReplacing = 4096,// Plug has function for writing audio out over the audio in buffer in 64bit floating point (double).
 	hasSynth	   = 256, // Plug is a synthesizer.
 };
-enum opcodes{ // With notes if vestige or the FST header uses this op-codes
+enum opcodes{
         plugEditOpen=14,        //Attention: Is called when the DAW whants the plug to open window.
         plugEditClose=15,       //Attention: After you answered this call, then the window is closed by DAW.
         plugEditGetRect=13,
@@ -45,18 +45,18 @@ enum opcodes{ // With notes if vestige or the FST header uses this op-codes
         plugGetParamText=7,     //Host asks for a text to display for the value of a parameter.
         plugGetParamName=8,     //Host asks for the name of a parameter in plug.
         plugSetSampleRate=10,   //The host tells the plug what sample rate that is currently used.
-        plugGetChunk=23,        //Host asks for an adress and the length of a data chunk that the host shall save for the plug.
-        plugSetChunk=24,        //Host asks for an adress and length of the data segment that the host shall fill to restore an old state.
-        plugCanBeAutomated =26, //For the host to check if it can automate a certain parameter.
-        plugGetVendorString=47, //For the host to ask for the name of the author of the plug.
-        plugGetProductString=48,//
-        plugCanDo=51,           //For the host to ask if the plug supports a sertain functionallity, the name of the functionallity is supplied in a text string by the host.
-        plugGetVstVersion=58,   //Asks the plug what version of the VST ABI that was designed for.
-	plugGetProgramNameIndexed=29,//Gets the preset name by index, Bitwig uses this.
-	plugGetProgramName=5,	//Alternative to plugGetProgramNameIndexed.
-	plugSetProgram=2,	//Change plug preset program
-	plugGetProgram=3,	//Ask plug for program number
-	plugGetPlugCategory=35  //Ask if it's a effect unit or a synthesizer. Other categories exists but is futile.
+        plugGetChunk=23,		//Host asks for an adress and the length of a data chunk that the host shall save for the plug.
+        plugSetChunk=24,		//Host asks for an adress and length of the data segment that the host shall fill to restore an old state.
+        plugCanBeAutomated =26,		//For the host to check if it can automate a certain parameter.
+        plugGetVendorString=47,		//For the host to ask for the name of the author of the plug.
+        plugGetProductString=48,	
+        plugCanDo=51,			//For the host to ask if the plug supports a sertain functionallity, the name of the functionallity is supplied in a text string by the host.
+        plugGetVersion=58,		//Asks the plug what version of the ABI that was designed for.
+	plugGetProgramNameIndexed=29,	//Gets the preset name by index, Bitwig uses this.
+	plugGetProgramName=5,		//Alternative to plugGetProgramNameIndexed.
+	plugSetProgram=2,		//Change plug preset program
+	plugGetProgram=3,		//Ask plug for program number
+	plugGetPlugCategory=35		//Ask if it's a effect unit or a synthesizer. Other categories exists but is futile.
 };
 struct ERect{
 	int16_t top;    // Set to zero
