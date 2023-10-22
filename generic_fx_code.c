@@ -119,7 +119,7 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
 	case plugGetProgramName:	getProgramName(plug->program_no,(char*)ptr);	return true;	// Alternative to plugGetProgramNameIndexed as some hosts use this instead.	
         case plugGetParamName:          getParameterName(index, (char*)ptr);            return true;	// Host whant the plug to transfer the indexed parameter's name. 
         case plugGetParamText:          getParameterText(plug, index, (char*)ptr);	return true;	// 
-        case plugGetVstVersion:         return 2400; // This plugin follows the VST2.4 ABI.
+        case plugGetVersion:		return 2400; // This plugin follows the VST2.4 ABI.
         case plugCanBeAutomated:        return true; // Return true if if the parameter is automatable. The index variable holds the parameter that the hosts asks about. In this example all parameters is automatable.
         case plugOpen:	   		for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++){ setknob(plug,i,presets[plug->program_no].param[i]); } return true; // Load preset 0. OP-Code is sent after the plug starts.
         case plugClose:			free(plug);					return true; // This op-code is sent by host before the plug gets deallocated from the system. To free resources and so on.
