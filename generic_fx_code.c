@@ -64,8 +64,8 @@ void setknob(plug_instance* plug,int knob,float value){
 }
 
 // Function is called by the host to make your plug do and answer different things that the DAW asks for.
-plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t index, plugPtr value, void *ptr, float opt){ // Pointer to this function is used in the myplugin header
-    plug_instance *plug = (plug_instance*)vstPlugin->object;
+plugPtr plugInstructionDecoder(plugHeader *plugin, int32_t opCode, int32_t index, plugPtr value, void *ptr, float opt){ // Pointer to this function is used in the myplugin header
+    plug_instance *plug = (plug_instance*)plugin->object;
     switch(opCode){
         case plugEditRedraw:                    
                 ikigui_get_events(&plug->dat.mywin); // update window events
@@ -131,8 +131,8 @@ plugPtr plugInstructionDecoder(plugHeader *vstPlugin, int32_t opCode, int32_t in
     return 0; // Return that it's not a supported message number by this plug.
 }
 // These functions is given to the host in the main() function bellow. The host can't call these without the function pointer to them.
-void  plugSetParameter(plugHeader *vstPlugin, int32_t index, float parameter){ plug_instance *plug = (plug_instance*)vstPlugin->object; plug->pth.knob[index] = parameter ; }// Host uses this to set parameter in plug
-float plugGetParameter(plugHeader *vstPlugin, int32_t index){ plug_instance *plug = (plug_instance*)vstPlugin->object; return (float)(plug->pth.knob[index]); }// Host uses this to get parameter from plug
+void  plugSetParameter(plugHeader *plugin, int32_t index, float parameter){ plug_instance *plug = (plug_instance*)plugin->object; plug->pth.knob[index] = parameter ; }// Host uses this to set parameter in plug
+float plugGetParameter(plugHeader *plugin, int32_t index){ plug_instance *plug = (plug_instance*)plugin->object; return (float)(plug->pth.knob[index]); }// Host uses this to get parameter from plug
 
 void* main(hostCallback HostCallback){ // New plug instances is created here. After plug load-in, it's the only known function for the host to run, that will give addresses for more functions for the host to run.
     struct plugHeader myplugin = {                              // Declaration of the struct that a plugin must return to the host.
@@ -145,7 +145,7 @@ void* main(hostCallback HostCallback){ // New plug instances is created here. Af
         .number_of_inputs =                                     2, // audio inputs
         .number_of_outputs =                                    2, // audio outputs
         .flags = hasReplacing | hasStateChunk | hasEditor,      // Bitflags for things this plugin supports
-        .version = VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG,        // plug-in version, not VST version.
+        .version = VERSION_NUMBER_OF_THIS_SPECIFIC_PLUG,        // plug-in version, not ABI version.
         .plugProcessFloatFunc = plugProcessSamplesFloat32,      // Name of the function where the audio processing is done.
         .plugProcessDoubleFunc = NULL,                          // No such function in this plug. Use for funtionpointer to 64bit floating point handeling
     };
