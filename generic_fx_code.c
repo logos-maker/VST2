@@ -1,4 +1,4 @@
-// This is an example of an audio effect unit, using the VST2.4 plugin ABI (ABI Application Binary Interface).
+// This is an example of an audio effect unit, using the version 2.4 plugin ABI (ABI Application Binary Interface).
 
 #include <stdint.h> // For variable declaration names.
 #include <stdbool.h>// For true and false keywords.
@@ -7,7 +7,7 @@
 #include <string.h> // For memcpy
 
 #include "libs/ikigui.h"	// cross platform audio plugin GUI library for tiled graphics and animations.
-#include "libs/rst.h"		// definitions for making VST2 audio plugins compatible with the ABI.
+#include "libs/rst.h"		// definitions for making audio plugins compatible with the ABI.
 
 //********************************
 //     Plugin data and buffers
@@ -35,7 +35,7 @@ struct patch{ // the patch that the DAW will save and restore when saving and lo
 
 typedef struct{ // general declarations
     struct plugHeader plughead; // It must be first in the struct. Note that each instance has this header.
-    plugPtr (*hostcall) (plugHeader* effect, int32_t opcode, int32_t index, plugPtr value, void* ptr, float opt); // VstIntPtr (*audioMasterCallback) i dokumentation
+    plugPtr (*hostcall) (plugHeader* effect, int32_t opcode, int32_t index, plugPtr value, void* ptr, float opt);
     struct patch pth; // all data to save and restore by host be the op-codes plugGetChunk and plugSetChunk functions.
     struct data dat; // buffers and variables for the audio algorithm.
     struct ERect myrect;
@@ -119,11 +119,11 @@ plugPtr plugInstructionDecoder(plugHeader *plugin, int32_t opCode, int32_t index
 	case plugGetProgramName:	getProgramName(plug->program_no,(char*)ptr);	return true;	// Alternative to plugGetProgramNameIndexed as some hosts use this instead.	
         case plugGetParamName:          getParameterName(index, (char*)ptr);            return true;	// Host whant the plug to transfer the indexed parameter's name. 
         case plugGetParamText:          getParameterText(plug, index, (char*)ptr);	return true;	// 
-        case plugGetVersion:		return 2400; // This plugin follows the VST2.4 ABI.
+        case plugGetVersion:		return 2400; // This plugin follows the 2.4 ABI.
         case plugCanBeAutomated:        return true; // Return true if if the parameter is automatable. The index variable holds the parameter that the hosts asks about. In this example all parameters is automatable.
         case plugOpen:	   		for(int i = 0 ; i < NUMBER_OF_PARAMETERS ; i++){ setknob(plug,i,presets[plug->program_no].param[i]); } return true; // Load preset 0. OP-Code is sent after the plug starts.
         case plugClose:			free(plug);					return true; // This op-code is sent by host before the plug gets deallocated from the system. To free resources and so on.
-        case plugCanDo:			return -1; // Respond: -1 to everything not supported. // example of checking text... if (0 == strcmp(((char*)ptr),"receiveVstEvents"))   return 1;  //receiveVstEvents
+        case plugCanDo:			return -1; // Respond: -1 to everything not supported. // example of checking text... if (0 == strcmp(((char*)ptr),"receiveEvents"))   return 1;  //receiveEvents
         case plugGetChunk:		{ *(void**)ptr = &plug->pth;  return sizeof(struct patch); break; } // Host saves the plug state inside the host.
         case plugSetChunk:		memcpy(&plug->pth, (unsigned char *)ptr, sizeof(struct patch)); return true; // Host loads an old saved state into plug.
         default: break; // ignoring all other opcodes //fprintf(fp, "index:%d value:%ld ptr:%p opt:%f instance:%d \n",index,value,ptr,opt,instances); // For printing op-codes not implemented.
