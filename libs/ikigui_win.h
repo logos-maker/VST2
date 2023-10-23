@@ -116,6 +116,13 @@ void ikigui_fill_bg(ikigui_image *frame,unsigned int color){// A background colo
         }
 }
 
+void ikigui_image_empty(ikigui_image *frame, uint32_t w,uint32_t h){ // NEW, GIVE BETTER NAME
+        frame->w = w;
+        frame->h = h;
+        frame->pixels = (unsigned int*)malloc(frame->w*frame->h*4);
+        frame->size = frame->w * frame->h ;
+}
+
 void ikigui_blit_alpha(ikigui_image *mywin,ikigui_image *frame, int x, int y, ikigui_rect *part){ // Draw area
         if((x<0) || (y<0))return; // sheilding crash
         if(mywin->w <= (x+part->w))return; // shielding crash
@@ -158,6 +165,33 @@ void ikigui_image_draw(ikigui_image *mywin,ikigui_image *frame, int x, int y){
         for(int j = 0 ; j < frame->h ; j++){ // vertical
                 for(int i = 0 ; i < frame->w ; i++){   // horizontal
                         mywin->pixels[(x+i+(hflip(mywin->h,j+y))*mywin->w)] = frame->pixels[i+frame->w*(j)];
+                }
+        }
+}
+void ikigui_draw_solid(ikigui_image *mywin, unsigned int color){ // Fill window.
+        for(int i = 0 ; i < mywin->w * mywin->h ; i++){ // All pixels      
+                        mywin->pixels[i] = color;
+        }
+}
+void ikigui_draw_gradient(ikigui_image *mywin, uint32_t color_top, uint32_t color_bot){ // Fill window.
+	double line_const = (double)255/(double)mywin->h;
+        for(int j = 0 ; j < mywin->h ; j++){ // vertical
+		double rise = (double)j * line_const ;	// rising
+		double fall = 255-rise;			// falling
+
+                for(int i = 0 ; i < mywin->w ; i++){   // horizontal
+			uint8_t r1 = (color_bot&0xff0000)>>16;	// Red color_bot
+			uint8_t g1 = (color_bot&0xff00)>>8;	// Green color_bot
+			uint8_t b1 = color_bot&0xff;		// Blue color_bot
+			uint8_t r2 = (color_top&0xff0000)>>16;	// Red color_top
+			uint8_t g2 = (color_top&0xff00)>>8;	// Red color_top
+			uint8_t b2 = color_top&0xff;		// Blue color_top
+
+			uint8_t ro = ((uint16_t)(rise*r1 + fall*r2))>>8;   // color_bot + color_top
+			uint8_t go = ((uint16_t)(rise*g1 + fall*g2))>>8;   // color_bot + color_top
+			uint8_t bo = ((uint16_t)(rise*b1 + fall*b2))>>8;   // color_bot + color_top
+
+			mywin->pixels[i+hflip(mywin->h,j)*mywin->w] = (255<<24) + (ro << 16) + (go<< 8) + bo;
                 }
         }
 }
