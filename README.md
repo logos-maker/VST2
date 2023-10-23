@@ -2,7 +2,7 @@
 
 # Audio plugin with editor, for Windows and Linux
 Use this as a template if you want a simple way to test out to make a VST plug and try it out.
-The code crosscompiles with 100% identical code to Windows and Linux.
+The code crosscompiles with 100% identical code to Windows and Linux and make 64-bit and 32bit plugins.
 
 If you use it as a toolkit for making audio plugins, then it's the most simple audio plugin toolkit you will ever find.
 And it's many thusand times simpler than the popular toolkit for audio plugins.
@@ -27,7 +27,6 @@ And it's certainly the case that you can't protect an ABI with copyright within 
 And any resemblance of the original API is well motivated as it's not even prohibited to make use of the original API without any violation of any original VST2 licenses.
 
 This makes compiled binaries for the most amount of music programs, with the least amount of code and dependencies.
-It currently only supports 64-bit platforms. But you can make 32-bit plugs if you change 2 or 3 lines.
 
 I have kept the code size as low as possible, and made it compatible with Linux and Windows without any third party libraries, relying only on well established standards. 
 This will make it compatible to the most systems even when compiling on a Linux machine and compile to Windows.
