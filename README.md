@@ -57,7 +57,7 @@ If you want to compile 32bit plugins on a 64bit machine run...
 ```
 sudo apt-get install gcc-multilib
 ```
-and use the -m32 flag for GCC
+and use the -m32 flag for GCC.  
 And if you want to make 32bit Windows plugs use...
 ```
 i686-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
