@@ -1,5 +1,10 @@
+#ifdef __x86_64
+	typedef int64_t plugPtr;
+#else
+	typedef int32_t plugPtr;
+#endif
 
-typedef int64_t plugPtr;
+//typedef int64_t plugPtr;
 typedef struct plugHeader plugHeader;
 struct plugHeader{ // The ABI for audio effect plugins
 	int32_t magicNumber;
