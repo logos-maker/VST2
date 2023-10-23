@@ -1,5 +1,5 @@
 ![](./gfx/thelay.png)
-
+_A sceenshot of the actual plugin example_
 # Audio plugin with editor, for Windows and Linux
 Use this as a template if you want a simple way to test out to make a VST plug and try it out.
 The code crosscompiles with 100% identical code to Windows and Linux and make 64-bit and 32bit plugins.
