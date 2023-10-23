@@ -1,4 +1,4 @@
-![](./gfx/thelay.png)
+![](./gfx/thelay.png)  
 _A sceenshot of the actual plugin example_
 # Audio plugin with editor, for Windows and Linux
 Use this as a template if you want a simple way to test out to make a VST plug and try it out.
