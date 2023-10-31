@@ -1,13 +1,13 @@
 ![](./gfx/thelay.png)  
 _A sceenshot of the actual plugin example_
 # Audio plugin with editor, for Windows and Linux
-Use this as a template if you want a simple way to test out to make a VST plug and try it out.
+Use this as a template if you want a simple way to test out to make a vst plug and try it out.
 The code crosscompiles with 100% identical code to Windows and Linux and make 64-bit and 32bit plugins.
 
 If you use it as a toolkit for making audio plugins, then it's the most simple audio plugin toolkit you will ever find.
 And it's many thusand times simpler than the popular toolkit for audio plugins.
 
-It subrogates the VST2 license by only using the VST2 ABI. Yes! the VST2 format will be alive and kicking forever. 
+It subrogates the VST2 license by only using the ABI. Yes! the vst2 format will be alive and kicking forever. 
 This makes it possible to make plugins to use in the majority of all music programs.
 
 This will make it possible to make a new plug even for beginners. And if you understand all of it, you will have gain deep knowleage of this the plugin format, that few people have.
@@ -19,8 +19,8 @@ and it's a much simpler language than C++ to learn, and will also give the faste
 ## Making your own plug
 I would check out the plug_specific_code.c file and tweek that file. Make a change and compile and check out the difference by loading the plugin into a music program.
 
-## Subrogating the VST2 licence - Making VST2 development availabe for anyone
-To make this available this code-base only uses the VST2 ABI.
+## Subrogating the VST2 licence - Making vst 2 development availabe for anyone
+To make this available this code-base only uses the vst 2 ABI.
 
 It's proven in court that you can't protect a API from common usage according to the the U.S. Supreme Court’s April 5 ruling in Google LLC v. Oracle America Inc. in 2021.
 And it's certainly the case that you can't protect an ABI with copyright within all reasonable doubt.
