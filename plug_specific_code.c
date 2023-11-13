@@ -27,7 +27,7 @@ ikigui_image knob_anim;	// Global graphics for knobs.
 ikigui_image bg;	// Global graphics for background art.
 
 void draw_graphics(plug_instance *plug){ 	   		// The DAW calls this when it wants to redraw the editor...
-	ikigui_image_draw(&plug->dat.mywin.frame,&bg, 0, 0); 	// Draw gackground.
+	ikigui_image_draw(&plug->dat.mywin.frame,&bg, 0, 0); 	// Draw background.
 	ikigui_map_draw(&plug->dat.knob_map,0,10,10);		// Draw knobs.
 }
 void prepare_graphics(plug_instance *plug,void *ptr){	// The DAW calls this when it wants to open the editor window...
