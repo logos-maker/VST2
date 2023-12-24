@@ -40,24 +40,28 @@ You can find out more about it [here](https://github.com/logos-maker/ikiGUI)
 The core concept in ikiGUI is simplicity, so it's not much to learn, and will give fewer compatibility issues with you plugins.
 
 ## Compilation on Linux
-It can easily be done on a standard Linux machine with a command like...
+To compile a 64-bit Linux plugin it can be done with a command like...
 ```
 gcc generic_fx_code.c -o plugin.so -fPIC -shared
 ```
-...for a 64-bit Linux plugin. Or...
-```
-x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
-```
-...for a 64-bit Windows plugin. To install the x86_64-w64-mingw32-gcc command run...
-```
-sudo apt -y install mingw-w64
-```
-If you want to compile 32bit plugins on a 64bit machine run...
+If you want to compile 32bit linux plugins on a 64bit machine install...
 ```
 sudo apt-get install gcc-multilib
 ```
-and use the -m32 flag for GCC.  
-And if you want to make 32bit Windows plugs use...
+...and use the -m32 flag for GCC with a command like...
+```
+gcc generic_fx_code.c -o plugin.so -fPIC -shared -m32
+```
+### If you want to cross compile to Windows
+Install the needed compiler commands with...
+```
+sudo apt -y install mingw-w64
+```
+If you want a 64-bit Windows plugin compile with a command like...
+```
+x86_64-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
+```
+And if you want to make 32bit Windows plugs use a command like...
 ```
 i686-w64-mingw32-gcc generic_fx_code.c -o plugin.dll -fPIC -shared -lgdi32
 ```
