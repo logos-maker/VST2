@@ -17,7 +17,8 @@ The code is written entirely in C code, a language that is the most commonly use
 and it's a much simpler language than C++ to learn, and will also give the fastest possible plugs possible, with the highest amount of compatibility.
 
 ## Making your own plug
-I would check out the plug_specific_code.c file and tweek that file. Make a change and compile and check out the difference by loading the plugin into a music program.
+I would check out the [RST Framework examples]([https://github.com/logos-maker/RST]) There you will wind several templates and examples.
+And take one of the examples and tweek that file. Make a change and compile and check out the difference by loading the plugin into a music program.
 
 ## Subrogating the VST2 licence - Making vst 2 development availabe for anyone
 To make this available this code-base only uses the vst 2 ABI.
