@@ -11,8 +11,6 @@ It subrogates the VST2 license by only using the ABI. Yes! the vst2 format will 
 This makes it possible to make plugins to use in the majority of all music programs.
 
 This will make it possible to make a new plug even for beginners. And if you understand all of it, you will have gain deep knowleage of this the plugin format, that few people have.
-Almost everything you need for a new plug is in one small file with less than 70 lines of code.
-If you strip away all the filled in code that's for the delay, than it's less than 50 lines of code of the core of this toolkit.
 The code is written entirely in C code, a language that is the most commonly used for audio applications for hardware, 
 and it's a much simpler language than C++ to learn, and will also give the fastest possible plugs possible, with the highest amount of compatibility.
 
