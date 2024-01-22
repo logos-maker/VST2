@@ -128,7 +128,6 @@ void mouse_handling(plug_instance *plug){		// Mouse handling
 void draw_graphics(plug_instance *plug){			// The DAW calls this when it wants to redraw the editor...
 	ikigui_image_draw(&plug->dat.mywin.frame,&bg, 0, 0);	// Draw background.
 	ikigui_map_draw(&plug->dat.knob_map,0,10,10);		// Draw knobs.
-	ikigui_map_draw(&plug->dat.font_map,0,10,0);		// Draw debugging text.
 }
 void prepare_graphics(plug_instance *plug,void *ptr){	// The DAW calls this when it wants to open the editor window...
 	// Image composite of a background image for the plug
