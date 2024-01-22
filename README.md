@@ -2,16 +2,13 @@
 _A sceenshot of the actual plugin example_
 # Audio plugin with editor, for Windows and Linux
 [More similar examples in C code can be found here](https://github.com/logos-maker/RST)
-Use this as a template if you want a simple way to test out to make a vst plug and try it out.
-The code crosscompiles with 100% identical code to Windows and Linux and make 64-bit and 32bit plugins.
 
-If you use it as a toolkit for making audio plugins, then it's the most simple audio plugin toolkit you will ever find.
-And it's many thusand times simpler than the popular toolkit for audio plugins.
+
+The code crosscompiles with 100% identical code to Windows and Linux and make 64-bit and 32bit plugins.
 
 It subrogates the VST2 license by only using the ABI. Yes! the vst2 format will be alive and kicking forever. 
 This makes it possible to make plugins to use in the majority of all music programs.
 
-This will make it possible to make a new plug even for beginners. And if you understand all of it, you will have gain deep knowleage of this the plugin format, that few people have.
 The code is written entirely in C code, a language that is the most commonly used for audio applications for hardware, 
 and it's a much simpler language than C++ to learn, and will also give the fastest possible plugs possible, with the highest amount of compatibility.
 
